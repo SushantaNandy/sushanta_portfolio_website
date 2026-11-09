@@ -1,0 +1,64 @@
+---
+import Black from '../layouts/Black.astro';
+import Strengths from '../components/Strengths.astro';
+import { ROLES_LONG, HONOURS } from '../content.js';
+---
+<Black page="about" title="About" description="About Sushanta Nandy: from a B.Tech in Mechanical Engineering to leading test automation for wealth and asset management platforms.">
+  <section class="pagehead" aria-labelledby="about-h">
+    <p class="kicker mono">About</p>
+    <h1 id="about-h" class="mega"><span>From engines</span><span class="indent">to pipelines</span></h1>
+  </section>
+
+  <svg class="outline" viewBox="0 0 1000 380" aria-hidden="true" data-draw>
+    <text x="500" y="340" text-anchor="middle">SN</text>
+  </svg>
+
+  <section class="sec story" aria-label="Story">
+    <p class="story-lead" data-reveal>I trained as a mechanical engineer and ended up testing the software that moves money.</p>
+    <div class="story-body" data-reveal>
+      <p>I took a B.Tech in Mechanical Engineering at OEC (2016–2021). In 2021 I joined Moolya Software Testing in Bengaluru, where I wrote and ran 350+ Appium scripts on daily Jenkins pipelines, closed 100+ API, performance and logic bugs, and received the Best Mentor Award in 2023.</p>
+      <p>At Deutsche Telekom Digital Labs I built the core E2E automation pipeline from 0 to 220+ scenarios and an LLM-driven test case generator that writes test inputs from API schemas.</p>
+      <p>Today, at FNZ Group, I lead automation for wealth platforms: migrating regression suites to Playwright, running AI-assisted testing with Virtuoso, and reporting delivery to senior stakeholders.</p>
+    </div>
+  </section>
+
+  <Strengths heading="h2" />
+
+  <section class="sec" aria-labelledby="exp-h">
+    <p class="kicker mono">Experience</p>
+    <h2 id="exp-h" class="mega mega-sm" data-reveal><span>Where I've</span><span>shipped</span></h2>
+    <div class="roles" style="margin-top: clamp(40px, 6vw, 80px)">
+      {ROLES_LONG.map((r) => (
+        <article class="role" style={`--tint:${r.tint}`} data-reveal>
+          <p class="r-tag mono">{r.tag}</p>
+          <h3 class="r-title">{r.title.map((l) => <span>{l}</span>)}</h3>
+          <div class="r-body"><p>{r.body}</p><ul>{r.points.map((p) => <li>{p}</li>)}</ul></div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="hon-h">
+    <p class="kicker mono">Honours & credentials</p>
+    <h2 id="hon-h" class="mega mega-sm"><span>Earned</span><span>along the way</span></h2>
+    <ul class="honours">
+      {HONOURS.map((h) => (
+        <li data-reveal><span class="h-year mono">{h.year}</span><span class="h-name">{h.name}</span><span class="h-detail">{h.detail}</span></li>
+      ))}
+    </ul>
+    <p class="lead">Languages: English (full professional), German (Goethe A1–A2), Japanese (basic).</p>
+  </section>
+</Black>
+
+<style>
+  /* Outline draws itself once as it scrolls in. */
+  .outline { display: block; width: min(100%, 1100px); margin: 0 auto; padding: 0 var(--pad); overflow: visible; user-select: none; }
+  .outline text { font: 900 400px var(--sans); letter-spacing: -.04em; fill: none; stroke: var(--go); stroke-width: 3; stroke-dasharray: 2600; transition: stroke-dashoffset 1600ms var(--ease-in-out); }
+  :global(.js) .outline text { stroke-dashoffset: 2600; }
+  :global(.js) .outline.is-in text { stroke-dashoffset: 0; }
+  @media (prefers-reduced-motion: reduce) { :global(.js) .outline text { stroke-dashoffset: 0; transition: none; } }
+  .story { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 64px; }
+  .story-lead { margin: 0; font-weight: 750; font-size: clamp(1.6rem, 3vw, 2.6rem); line-height: 1.15; letter-spacing: -.02em; }
+  .story-body p { margin: 0 0 18px; color: var(--soft); line-height: 1.7; font-size: 1.05rem; }
+  @media (max-width: 760px) { .story { grid-template-columns: 1fr; } }
+</style>

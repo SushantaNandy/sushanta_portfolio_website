@@ -1,0 +1,173 @@
+---
+import '@fontsource-variable/schibsted-grotesk';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import { ROLES, PROJECTS, RESUME, EMAIL, LINKEDIN, GITHUB } from '../data.js';
+
+// Same content as the plain pages; each station shows one block.
+const domain = ['Portfolio management', 'Trade order execution', 'Fees and charges engine', 'Transfers-out', 'Client onboarding', 'Multi-family and HNI models'];
+const stations = ['Profile', 'Results', 'Domain', 'Projects', 'About', 'Contact'];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Drive the pipeline · Sushanta Nandy</title>
+    <meta name="description" content="Sushanta Nandy, Lead SDET. Drive a build through a 3D CI/CD pipeline to see his work, or use the plain version." />
+    <meta name="theme-color" content="#0b1b2e" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      // Reduced motion or no WebGL: the plain site is the experience.
+      (function () {
+        var c = document.createElement('canvas');
+        var gl = c.getContext('webgl2') || c.getContext('webgl');
+        if (!gl || matchMedia('(prefers-reduced-motion: reduce)').matches) location.replace('/');
+      })();
+    </script>
+  </head>
+  <body class="drive">
+    <canvas id="world" aria-hidden="true"></canvas>
+
+    <header class="d-top">
+      <div>
+        <p class="d-name">Sushanta Nandy</p>
+        <p class="d-role">Lead SDET · wealth and asset management platforms</p>
+      </div>
+      <nav class="d-actions" aria-label="Quick links">
+        <a class="btn btn-go btn-sm" href={RESUME} download>Resume</a>
+        <a class="btn btn-ghost btn-sm" href={`mailto:${EMAIL}`}>Email</a>
+        <button class="btn btn-ghost btn-sm" id="sound" type="button" aria-pressed="false">Sound off</button>
+        <a class="btn btn-ghost btn-sm" href="/">Plain version</a>
+      </nav>
+    </header>
+
+    <nav class="d-stages" aria-label="Pipeline stages">
+      <ol>
+        {stations.map((s, i) => (
+          <li><button type="button" data-goto={i} class:list={[i === stations.length - 1 && 'is-gate']}><span class="d-dot"></span>{s}</button></li>
+        ))}
+      </ol>
+    </nav>
+
+    <p class="d-hint" id="hint"><span class="hint-keys">Drive with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrow keys, or jump to a stage.</span><span class="hint-touch">Drive with the arrow pad, or jump to a stage.</span></p>
+
+    <section class="d-panel" id="panel" aria-live="polite" hidden>
+      <button class="d-close" id="close" type="button" aria-label="Close">×</button>
+
+      <article data-station="0" hidden>
+        <p class="d-kicker">Stage 1 · Profile</p>
+        <h1 class="d-h">I test the systems that move other people's money.</h1>
+        <p>SDET specialising in wealth and asset management platforms. 5+ years, ISTQB certified, Playwright, Java and Appium. Based in Gurugram.</p>
+      </article>
+
+      <article data-station="1" hidden>
+        <p class="d-kicker">Stage 2 · Results</p>
+        <h2 class="d-h">Three roles, three results.</h2>
+        <ul class="d-list">
+          {ROLES.map((r) => <li><strong>{r.company}</strong>{r.results.join(' · ')}</li>)}
+        </ul>
+      </article>
+
+      <article data-station="2" hidden>
+        <p class="d-kicker">Stage 3 · Domain</p>
+        <h2 class="d-h">Wealth platforms are where I'm most useful.</h2>
+        <p>A failed test here can mean a wrong fee or a broken trade.</p>
+        <ul class="d-tags">{domain.map((d) => <li>{d}</li>)}</ul>
+      </article>
+
+      <article data-station="3" hidden>
+        <p class="d-kicker">Stage 4 · Projects</p>
+        <h2 class="d-h">Six projects, each with the result it shipped.</h2>
+        <ul class="d-list">
+          {PROJECTS.map((p) => <li><strong>{p.href ? <a href={p.href}>{p.title}</a> : p.title}</strong>{p.result}</li>)}
+        </ul>
+        <a class="d-more" href="/work/">All projects →</a>
+      </article>
+
+      <article data-station="4" hidden>
+        <p class="d-kicker">Stage 5 · About</p>
+        <h2 class="d-h">From mobile test scripts to automation strategy.</h2>
+        <p>FNZ Group (now) · Deutsche Telekom Digital Labs · Moolya Software Testing. I also run delivery: burn-down reports, resource planning and milestone tracking.</p>
+        <p class="d-small">ISTQB · CEH v11 · AI For Everyone · HackerRank Java · 400+ LeetCode</p>
+        <a class="d-more" href="/about/">Full background →</a>
+      </article>
+
+      <article data-station="5" hidden>
+        <p class="d-kicker">Stage 6 · Waiting on your approval</p>
+        <h2 class="d-h">Next stage: your team.</h2>
+        <p><a href={`mailto:${EMAIL}`}>{EMAIL}</a></p>
+        <p class="d-links">
+          <a class="btn btn-go btn-sm" href={RESUME} download>Download resume</a>
+          <a class="btn btn-line btn-sm" href={LINKEDIN} rel="me">LinkedIn</a>
+          <a class="btn btn-line btn-sm" href={GITHUB} rel="me">GitHub</a>
+        </p>
+      </article>
+    </section>
+
+    <div class="d-pad" aria-hidden="true">
+      <button data-key="left">◀</button><button data-key="up">▲</button><button data-key="down">▼</button><button data-key="right">▶</button>
+    </div>
+
+    <script>
+      import { startWorld } from '../scripts/world.js';
+      startWorld(document.getElementById('world'));
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  body.drive { margin: 0; overflow: hidden; background: var(--navy); color: var(--on-navy); height: 100dvh; }
+  #world { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .drive .d-top { position: fixed; inset: 0 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 14px var(--gutter); background: linear-gradient(rgb(11 27 46 / .85), transparent); z-index: 2; }
+  .d-name { margin: 0; font-weight: 750; font-size: 1.25rem; }
+  .d-role { margin: 2px 0 0; color: var(--on-navy-2, #b7c6d6); font-size: .95rem; }
+  .d-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .d-actions button.btn { background: transparent; }
+  .d-actions .btn-ghost[aria-pressed='true'] { border-color: var(--go); color: var(--go); }
+
+  .d-stages { position: fixed; left: var(--gutter); top: 50%; transform: translateY(-50%); z-index: 2; }
+  .d-stages ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .d-stages button { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 6px 12px; border: 1px solid var(--navy-line); border-radius: var(--r); background: rgb(11 27 46 / .75); color: var(--on-navy); font: 600 .95rem var(--sans); cursor: pointer; }
+  .d-stages button:focus-visible { outline: 2px solid var(--go); outline-offset: 2px; }
+  .d-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #7d93ab; }
+  .d-stages button.is-passed .d-dot { background: var(--go); border-color: var(--go); }
+  .d-stages button.is-gate.is-passed .d-dot { background: var(--wait); border-color: var(--wait); }
+
+  .d-hint { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); margin: 0; padding: 10px 14px; border-radius: var(--r); background: rgb(11 27 46 / .8); font-size: .95rem; z-index: 2; transition: opacity 400ms var(--ease); text-align: center; }
+  .d-hint.is-gone { opacity: 0; pointer-events: none; }
+  .d-hint kbd { font: 600 .8rem var(--mono); border: 1px solid #7d93ab; border-radius: 4px; padding: 1px 5px; margin-inline: 2px; }
+
+  .d-panel { position: fixed; right: var(--gutter); top: 50%; transform: translateY(-50%); width: min(420px, calc(100vw - 2 * var(--gutter))); max-height: 70dvh; overflow: auto; padding: 22px 22px 20px; border-radius: 10px; background: var(--paper); color: var(--ink); box-shadow: 0 20px 60px rgb(0 0 0 / .4); z-index: 3; }
+  .d-panel a:not(.btn) { color: var(--go-ink); }
+  .d-close { position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; border: 0; background: none; font-size: 1.6rem; color: var(--ink); cursor: pointer; }
+  .d-kicker { margin: 0 0 6px; font: 600 .8rem var(--mono); color: var(--go-ink); text-transform: uppercase; letter-spacing: .04em; }
+  .d-h { margin: 0 0 10px; font-size: 1.45rem; line-height: 1.15; padding-right: 28px; }
+  .d-panel p { margin: 0 0 10px; line-height: 1.5; }
+  .d-small { font-size: .9rem; color: #4a5c70; }
+  .d-list { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 8px; }
+  .d-list li { display: grid; gap: 2px; padding: 8px 10px; border-radius: var(--r); background: var(--go-tint); font-size: .95rem; }
+  .d-tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .d-tags li { font: 500 .8rem var(--mono); padding: 4px 8px; border: 1px solid var(--line); border-radius: 4px; }
+  .d-links { display: flex; flex-wrap: wrap; gap: 8px; }
+  .d-more { font-weight: 650; }
+
+  .d-pad { display: none; position: fixed; right: 16px; bottom: 16px; z-index: 2; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(2, 56px); gap: 6px; }
+  .d-pad button { border: 1px solid var(--navy-line); border-radius: 10px; background: rgb(11 27 46 / .8); color: var(--on-navy); font-size: 1.2rem; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .d-pad [data-key='up'] { grid-column: 2; grid-row: 1; }
+  .d-pad [data-key='left'] { grid-column: 1; grid-row: 2; }
+  .d-pad [data-key='down'] { grid-column: 2; grid-row: 2; }
+  .d-pad [data-key='right'] { grid-column: 3; grid-row: 2; }
+  .hint-touch { display: none; }
+  @media (pointer: coarse) { .d-pad { display: grid; } .hint-keys { display: none; } .hint-touch { display: inline; } }
+
+  @media (max-width: 760px) {
+    .d-role { display: none; }
+    .d-stages { top: auto; bottom: 150px; transform: none; }
+    .d-stages ol { grid-auto-flow: column; overflow-x: auto; max-width: calc(100vw - 2 * var(--gutter)); }
+    .d-stages button { white-space: nowrap; }
+    .d-panel { top: auto; bottom: 16px; transform: none; max-height: 52dvh; right: var(--gutter); }
+    .d-hint { bottom: auto; top: 130px; width: max-content; max-width: calc(100vw - 2 * var(--gutter)); }
+    .panel-open .d-pad, .panel-open .d-stages { display: none; }
+  }
+</style>

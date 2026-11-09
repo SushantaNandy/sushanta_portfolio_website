@@ -1,0 +1,126 @@
+---
+import Black from '../layouts/Black.astro';
+import Card from '../components/Card.astro';
+import Swing from '../components/Swing.astro';
+import Strengths from '../components/Strengths.astro';
+import { PROJECTS } from '../data.js';
+import { ROLES_LONG, TOOLS } from '../content.js';
+
+const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).padStart(3, '0')}`);
+---
+<Black description="Sushanta Nandy, ISTQB-certified Lead SDET in Gurugram. Test automation for wealth and asset management platforms: Playwright, Java, Appium. 40% faster release cycles at FNZ.">
+  <section class="hero" aria-label="Intro">
+    <!-- Entrance lives on inner spans: the outer elements own the scroll-out animation. -->
+    <p class="hero-clock mono" aria-hidden="true"><span class="in in-deco" data-clock>00:00:00:00</span></p>
+    <p class="hero-who mono"><span class="in in-support">Sushanta Nandy · Lead SDET · Gurugram</span></p>
+    <h1 class="hero-mark"><span class="sr">Sushanta Nandy</span><span class="in in-lead" aria-hidden="true">S<span class="dash"><Swing /></span>N</span></h1>
+    <p class="hero-date mono" aria-hidden="true"><span class="in in-deco" data-date></span></p>
+    <p class="hero-scroll mono"><span class="in in-deco in-late">(Scroll)</span></p>
+  </section>
+
+  <section class="sec statement" aria-labelledby="statement-h">
+    <h2 id="statement-h" class="mega" data-reveal>
+      <span>Testing the systems</span>
+      <span class="indent">that move</span>
+      <span>other people's money,</span>
+      <span class="indent">end to end</span>
+    </h2>
+    <p class="lead" data-reveal>ISTQB-certified Lead SDET with 5+ years in wealth and asset management. I migrate legacy suites to Playwright, build AI-assisted test tooling, and run delivery for the pods I lead. Based in Gurugram, India.</p>
+  </section>
+
+  <section class="sec" aria-labelledby="work-h">
+    <p class="kicker mono">Selected work</p>
+    <h2 id="work-h" class="mega mega-sm" data-reveal>
+      <span>Six projects.</span>
+      <span>Each one shipped</span>
+      <span>with a number</span>
+      <span>you can check.</span>
+    </h2>
+    <div class="cards cards-big">
+      {PROJECTS.slice(0, 4).map((p) => <Card p={p} />)}
+    </div>
+    <a class="marquee marquee-link" href="/work/">
+      <span class="sr">See all six projects</span>
+      <span class="track" aria-hidden="true">{Array.from({ length: 8 }, () => <span>See all six projects <b>→</b></span>)}</span>
+    </a>
+  </section>
+
+  <Strengths heading="h3" />
+
+  <section class="sec journey" aria-labelledby="journey-h">
+    <div class="marquee" aria-hidden="true">
+      <span class="track">{Array.from({ length: 3 }, () => TOOLS.map((t) => <span>{t}<i>—</i></span>))}</span>
+    </div>
+    <div class="marquee marquee-rev" aria-hidden="true">
+      <span class="track">{Array.from({ length: 3 }, () => TOOLS.slice().reverse().map((t) => <span>{t}<i>—</i></span>))}</span>
+    </div>
+    <p class="runrow mono" aria-hidden="true">{tests.map((t, i) => <span style={`--i:${i}`}>{t}</span>)}</p>
+    <h2 id="journey-h" class="mega mega-sm center" data-reveal>
+      <span>Plan it.</span>
+      <span>Automate it.</span>
+      <span>Run it in CI.</span>
+      <span>Prove it in numbers.</span>
+    </h2>
+    <p class="lead center" data-reveal>I decide what is worth automating, build the framework, wire it into Jenkins and BrowserStack, and report progress as burn-downs and goal-wise status that stakeholders can act on.</p>
+  </section>
+
+  <section class="sec" aria-labelledby="exp-h">
+    <p class="kicker mono">Experience</p>
+    <h2 id="exp-h" class="mega mega-sm" data-reveal><span>Three teams,</span><span>one through-line</span></h2>
+    <div class="roles" style="margin-top: clamp(40px, 6vw, 80px)">
+      {ROLES_LONG.map((r) => (
+        <article class="role" style={`--tint:${r.tint}`} data-reveal>
+          <p class="r-tag mono">{r.tag}</p>
+          <h3 class="r-title">{r.title.map((l) => <span>{l}</span>)}</h3>
+          <div class="r-body">
+            <p>{r.body}</p>
+            <ul>{r.points.map((p) => <li>{p}</li>)}</ul>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</Black>
+
+<style>
+  .hero { position: relative; height: 100svh; min-height: 560px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 var(--pad); }
+  .hero-clock, .hero-date { font-size: clamp(.8rem, 1.3vw, 1.05rem); margin: 0; }
+  .hero-date { justify-self: end; }
+  .hero-mark { margin: 0; font-weight: 900; font-size: clamp(4.5rem, 14vw, 13rem); line-height: .8; letter-spacing: -.02em; position: relative; z-index: 1; }
+  /* The dash is a drawn bar so the swing can hang from it without inheriting a stretched glyph. */
+  .dash { position: relative; display: inline-block; width: 1.25em; height: .14em; margin-inline: .12em; background: currentColor; vertical-align: .3em; }
+  .hero-who { position: absolute; left: 0; right: 0; top: calc(50% - clamp(4.6rem, 11vw, 9.5rem)); margin: 0; text-align: center; font-size: clamp(.75rem, 1.1vw, .95rem); color: var(--soft); }
+  .hero-scroll { position: absolute; left: 50%; bottom: 3%; transform: translateX(-50%); margin: 0; font-size: .75rem; color: var(--dim); }
+  .statement { padding-top: clamp(40px, 6vw, 80px); }
+
+  /* Hero entrance, once per visit. Lead: the S—N mark (carrying the swing) rises.
+     Support: the name line follows, overlapping. Decoration: clock, date, (Scroll) fade in place. */
+  .in { display: inline-block; animation: in-fade 500ms var(--ease) both; }
+  .in-lead { animation: in-rise 700ms var(--ease) both; }
+  .in-support { animation: in-rise-sm 600ms var(--ease) 120ms both; }
+  .in-deco { animation-delay: 200ms; }
+  .in-late { animation-delay: 600ms; }
+  @keyframes in-fade { from { opacity: 0; } }
+  @keyframes in-rise { from { opacity: 0; transform: translateY(18px); } }
+  @keyframes in-rise-sm { from { opacity: 0; transform: translateY(8px); } }
+  @media (prefers-reduced-motion: reduce) { .in, .in-lead, .in-support { animation: in-fade 300ms ease both; } }
+  .journey .marquee { margin-top: 0; border-top: 0; }
+  .journey .marquee + .marquee { border-top: 1px solid var(--line); }
+  @media (max-width: 640px) {
+    /* Text stacks above the mark; the swing hangs into the empty space below it. */
+    .hero { grid-template-columns: 1fr; grid-template-rows: .6fr auto auto auto auto 1.6fr; justify-items: center; gap: 14px; }
+    .hero-clock { grid-row: 2; } .hero-date { grid-row: 3; justify-self: center; } .hero-who { position: static; grid-row: 4; } .hero-mark { grid-row: 5; }
+  }
+</style>
+
+<script>
+  const clock = document.querySelector('[data-clock]');
+  const pad = (n) => String(n).padStart(2, '0');
+  const tick = () => {
+    const d = new Date();
+    clock.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}:${pad(Math.floor(d.getMilliseconds() / 10))}`;
+    requestAnimationFrame(tick);
+  };
+  tick();
+  const d = new Date();
+  document.querySelector('[data-date]').textContent = `${d.toLocaleString('en', { month: 'short' }).toUpperCase()} ${d.getDate()} ${d.getFullYear()}`;</script>

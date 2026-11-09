@@ -1,0 +1,40 @@
+---
+import Black from '../layouts/Black.astro';
+import Card from '../components/Card.astro';
+import { PROJECTS } from '../data.js';
+---
+<Black page="work" title="Work" description="Six test automation projects by Sushanta Nandy, each with the result it shipped: Playwright migration, AI testing, E2E pipelines, LLM test generation, API mocks, mobile automation.">
+  <section class="pagehead" aria-labelledby="work-h">
+    <h1 id="work-h" class="mega mega-sm"><span>Test automation</span><span>shipped by Sushanta</span></h1>
+    <div class="filters" role="group" aria-label="Filter projects">
+      <button type="button" class="chip" aria-pressed="true" data-filter="all">All</button>
+      <button type="button" class="chip" aria-pressed="false" data-filter="case">Case study</button>
+    </div>
+  </section>
+  <section class="sec" style="padding-top:0" aria-label="Projects">
+    <div class="cards cards-grid">
+      {PROJECTS.map((p) => <div data-case={p.href ? 'yes' : 'no'} data-reveal style={`view-transition-name: card-${p.id}`}><Card p={p} /></div>)}
+    </div>
+  </section>
+</Black>
+
+<style>
+  .pagehead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 24px; }
+  .filters { display: flex; gap: 8px; }
+  .chip { min-height: 40px; padding: 8px 16px; border: 1.5px solid var(--dim); border-radius: 999px; background: none; color: var(--fg); font: 600 .9rem var(--sans); cursor: pointer; transition: background 200ms ease, color 200ms ease, border-color 200ms ease, transform 160ms var(--ease); }
+  .chip[aria-pressed='true'] { background: var(--fg); color: #000; border-color: var(--fg); }
+  .chip:active { transform: scale(.97); }
+  @media (hover: hover) and (pointer: fine) { .chip[aria-pressed='false']:hover { border-color: var(--fg); } }</style>
+
+<script>
+  const chips = document.querySelectorAll('[data-filter]');
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  chips.forEach((c) => c.addEventListener('click', () => {
+    chips.forEach((x) => x.setAttribute('aria-pressed', String(x === c)));
+    const onlyCase = c.dataset.filter === 'case';
+    const apply = () => document.querySelectorAll('[data-case]').forEach((el) => (el.hidden = onlyCase && el.dataset.case !== 'yes'));
+    // Cards that stay glide to their new slot; the rest fade, instead of the grid jumping.
+    if (document.startViewTransition && !still) document.startViewTransition(apply);
+    else apply();
+  }));
+</script>

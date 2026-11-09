@@ -1,0 +1,80 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/Icon.astro';
+import Status from '../../components/Status.astro';
+---
+<Layout page="case" title="Moving a regression suite to Playwright" talk description="Case study: Sushanta Nandy led the migration of legacy regression suites to Playwright at FNZ Group, with parallel execution on BrowserStack and Jenkins. 40% faster release cycles.">
+  <section class="pagehead" aria-labelledby="page-h">
+    <div class="wrap">
+      <a class="back" href="/work/"><Icon name="arrow" size={16} />All work</a>
+      <h1 id="page-h" class="display display-md"><span style="view-transition-name: case-title">Moving a regression suite to Playwright</span></h1>
+      <p class="hero-sub">FNZ Group. Automation Test Analyst, Feb 2026 to present.</p>
+    </div>
+  </section>
+
+  <div class="wrap case">
+    <nav class="steps" aria-label="On this page">
+      <ol>
+        <li><a href="#result"><Status state="passed" label="The result" /></a></li>
+        <li><a href="#did"><Status state="passed" label="What I did" /></a></li>
+        <li><a href="#next"><Status state="queued" label="Next project" /></a></li>
+      </ol>
+    </nav>
+
+    <div class="case-body">
+      <section id="result" aria-labelledby="result-h">
+        <h2 id="result-h" class="h2">The result</h2>
+        <p class="bigstat"><span class="bigstat-n" data-count="40">40%</span> faster release cycles</p>
+        <figure class="lanes" data-reveal>
+          <div class="lanes-group">
+            <p class="lanes-label">One after another</p>
+            <div class="lane"><span class="lane-bar lane-serial"></span></div>
+          </div>
+          <div class="lanes-group">
+            <p class="lanes-label">In parallel</p>
+            <div class="lane"><span class="lane-bar lane-par"></span></div>
+            <div class="lane"><span class="lane-bar lane-par"></span></div>
+            <div class="lane"><span class="lane-bar lane-par"></span></div>
+          </div>
+          <figcaption>Illustration of the idea, not measured data.</figcaption>
+        </figure>
+      </section>
+
+      <section id="did" aria-labelledby="did-h">
+        <h2 id="did-h" class="h2">What I did</h2>
+        <p class="lede">I led the migration of the legacy regression suites to Playwright, standardised parallel execution, and deployed the suites to BrowserStack and Jenkins.</p>
+        <ul class="tags" data-reveal>
+          <li>Playwright</li><li>BrowserStack</li><li>Jenkins</li>
+        </ul>
+      </section>
+
+      <section id="next" aria-labelledby="next-h">
+        <h2 id="next-h" class="sr-only">Next project</h2>
+        <a class="next" href="/work/#virtuoso">
+          <span class="next-title" data-text="AI testing with Virtuoso">AI testing with Virtuoso</span>
+          <span class="next-result">60% less locator upkeep <Icon name="arrow" /></span>
+        </a>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // Count the 40% up in step with the lanes; the final number is already in the HTML.
+    const n = document.querySelector('[data-count]');
+    const fig = document.querySelector('.lanes');
+    if (n && fig && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const end = Number(n.dataset.count);
+      new IntersectionObserver((entries, io) => {
+        if (!entries[0].isIntersecting) return;
+        io.disconnect();
+        const t0 = performance.now();
+        const tick = (t) => {
+          const p = Math.min((t - t0) / 1600, 1);
+          n.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))) + '%';
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }, { rootMargin: '0px 0px -12% 0px' }).observe(fig);
+    }
+  </script>
+</Layout>

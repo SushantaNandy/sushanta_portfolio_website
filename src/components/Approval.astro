@@ -1,0 +1,42 @@
+---
+import Icon from './Icon.astro';
+import Status from './Status.astro';
+import { Picture } from 'astro:assets';
+import road from '../assets/road.jpg';
+import { EMAIL, RESUME, LINKEDIN, GITHUB } from '../data.js';
+
+// full = the Contact page version (copy button, all links, location); otherwise the Home closing band.
+const { full = false } = Astro.props;
+---
+<section class:list={['approval', full && 'approval-full']} aria-labelledby="approval-h">
+  <Picture class="approval-photo" src={road} formats={['avif', 'webp']} widths={[800, 1280, 1800, 2400]} sizes="100vw" alt="" loading={full ? 'eager' : 'lazy'} />
+  <div class="wrap approval-wrap">
+    <div class="approval-card">
+      <Status state="waiting" label="Waiting on your approval" />
+      <h2 id="approval-h" class="approval-h">Next stage: your team.</h2>
+      {full ? (
+        <>
+          <div class="email-row">
+            <a class="email" href={`mailto:${EMAIL}`}>{EMAIL}</a>
+            <button class="btn btn-line btn-sm copy" type="button" data-copy={EMAIL}>
+              <span class="copy-a"><Icon name="copy" size={16} />Copy</span>
+              <span class="copy-b" aria-hidden="true"><Icon name="check" size={16} />Copied</span>
+            </button>
+            <span class="sr-only" role="status" data-copy-status></span>
+          </div>
+          <ul class="approval-actions">
+            <li><a class="btn btn-go" href={RESUME} download><Icon name="download" />Download resume</a></li>
+            <li><a class="btn btn-line" href={LINKEDIN} rel="me">LinkedIn</a></li>
+            <li><a class="btn btn-line" href={GITHUB} rel="me">GitHub</a></li>
+          </ul>
+          <p class="approval-meta">Gurugram, India</p>
+        </>
+      ) : (
+        <ul class="approval-actions">
+          <li><a class="btn btn-go" href={`mailto:${EMAIL}`}><Icon name="mail" />Email Sushanta</a></li>
+          <li><a class="btn btn-line" href={RESUME} download><Icon name="download" />Download resume</a></li>
+        </ul>
+      )}
+    </div>
+  </div>
+</section>

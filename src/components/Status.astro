@@ -1,0 +1,11 @@
+---
+// Pipeline status pill: passed (check), running (pulsing dot), waiting (spinner).
+const { state = 'passed', label } = Astro.props;
+const text = label ?? state;
+---
+<span class={`status status-${state}`}>
+  {state === 'passed' && <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>}
+  {state === 'running' && <span class="status-dot" aria-hidden="true"></span>}
+  {state === 'waiting' && <span class="spinner" aria-hidden="true"></span>}
+  <span>{text}</span>
+</span>

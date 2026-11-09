@@ -1,0 +1,94 @@
+---
+// Strengths as a vertical list: the row nearest the middle of the screen is fully lit,
+// rows toward the top or bottom dim. Each row has its own code-drawn art.
+import { STRENGTHS } from '../content.js';
+const { heading = 'h3' } = Astro.props;
+const H = heading;
+---
+<section class="focuslist" aria-label="Strengths">
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#2fd47a" /><stop offset=".35" stop-color="#9ff5c8" />
+        <stop offset=".55" stop-color="#5b8cff" /><stop offset=".8" stop-color="#f4f4f2" /><stop offset="1" stop-color="#2fd47a" />
+      </linearGradient>
+    </defs>
+  </svg>
+  {STRENGTHS.map((s, i) => (
+    <article class="fl-row">
+      <div class="fl-art" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          {i === 0 && (
+            /* Automation: three nested frames, a framework inside a framework */
+            <g class="spin" fill="none" stroke="url(#sheen)" stroke-width="14">
+              <rect x="30" y="30" width="140" height="140" rx="36" />
+              <rect x="62" y="62" width="76" height="76" rx="20" transform="rotate(45 100 100)" />
+              <circle cx="100" cy="100" r="12" fill="url(#sheen)" stroke="none" />
+            </g>
+          )}
+          {i === 1 && (
+            /* Domain: stacked coins, money moving through the system */
+            <g fill="url(#sheen)">
+              {[0, 1, 2, 3].map((k) => <ellipse class="bob" style={`--k:${k}`} cx="100" cy={150 - k * 30} rx="70" ry="22" opacity={0.55 + k * 0.15} />)}
+            </g>
+          )}
+          {i === 2 && (
+            /* Speed: chevrons, a pipeline pushing forward */
+            <g class="push" fill="none" stroke="url(#sheen)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M40 50 l50 50 -50 50" /><path d="M85 50 l50 50 -50 50" opacity=".7" /><path d="M130 50 l50 50 -50 50" opacity=".4" />
+            </g>
+          )}
+          {i === 3 && (
+            /* Precision: a target, the number that has to be exactly right */
+            <g fill="none" stroke="url(#sheen)">
+              <circle cx="100" cy="100" r="76" stroke-width="12" />
+              <circle cx="100" cy="100" r="46" stroke-width="10" />
+              <circle cx="100" cy="100" r="14" fill="url(#sheen)" stroke="none" />
+              <path class="spin" d="M100 6 v36 M100 158 v36 M6 100 h36 M158 100 h36" stroke="#f4f4f2" stroke-width="3" />
+            </g>
+          )}
+        </svg>
+      </div>
+      <div class="fl-text">
+        <p class="s-n mono">{s.n}</p>
+        <div class="fl-head">
+          <H class="fl-title">{s.title}</H>
+          <span class="fl-pill">{s.kicker}</span>
+        </div>
+        <p class="fl-body">{s.body}</p>
+      </div>
+    </article>
+  ))}
+</section>
+
+<style>
+  .focuslist { border-top: 1px solid var(--line); }
+  .fl-row { display: grid; grid-template-columns: minmax(140px, 300px) 1fr; gap: clamp(28px, 6vw, 96px); align-items: center; padding: clamp(48px, 9vh, 110px) var(--pad); border-bottom: 1px solid var(--line); }
+  .fl-art svg { width: 100%; height: auto; }
+  .fl-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin: 6px 0 18px; }
+  .fl-title { margin: 0; font-weight: 850; text-transform: uppercase; letter-spacing: -.03em; font-size: clamp(2.4rem, 6vw, 5.4rem); line-height: .9; }
+  .fl-pill { padding: 8px 16px; border-radius: 999px; background: var(--fg); color: #000; font-weight: 650; font-size: .95rem; }
+  .fl-body { margin: 0; max-width: 60ch; color: var(--soft); line-height: 1.65; font-size: clamp(1rem, 1.3vw, 1.15rem); }
+  @media (max-width: 700px) { .fl-row { grid-template-columns: 1fr; } .fl-art { width: 140px; } }
+
+  /* Constant idle motion on the art: linear, slow, decorative. */
+  .spin { transform-box: fill-box; transform-origin: center; animation: spin 24s linear infinite; }
+  .bob { animation: bob 3.2s ease-in-out infinite alternate; animation-delay: calc(var(--k) * -400ms); }
+  .push { animation: push 2.4s ease-in-out infinite alternate; }
+  @keyframes spin { to { transform: rotate(1turn); } }
+  @keyframes bob { to { transform: translateY(-6px); } }
+  @keyframes push { to { transform: translateX(8px); } }
+
+  /* Focus light: each row is brightest while it crosses the middle of the screen. */
+  @supports (animation-timeline: view()) {
+    .fl-row { animation: focus linear both; }
+    .fl-row .fl-art svg { animation: lift linear both; }
+    .focuslist > .fl-row, .focuslist > .fl-row > .fl-art > svg { animation-timeline: view(); animation-range: cover 0% cover 100%; }
+    @keyframes focus { 0%, 100% { opacity: .16; } 38%, 62% { opacity: 1; } }
+    @keyframes lift { 0%, 100% { transform: scale(.88); } 50% { transform: none; } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spin, .bob, .push { animation: none; }
+    .fl-row .fl-art svg { animation: none; } /* keep the brightness cue, drop the scale */
+  }
+</style>

@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { PROJECTS } from '../data.js';
+---
+<Layout page="work" title="Work" talk description="Six test automation projects by Sushanta Nandy at FNZ, Deutsche Telekom Digital Labs and Moolya, each with the result it shipped.">
+  <section class="pagehead" aria-labelledby="page-h">
+    <div class="wrap">
+      <h1 id="page-h" class="display display-md">Work</h1>
+      <p class="hero-sub">Six projects, each with the result it shipped.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="table-scroll">
+        <table class="stageview projects" data-reveal>
+          <caption class="sr-only">Projects, where they ran, their stack and result</caption>
+          <thead>
+            <tr><th scope="col">Project</th><th scope="col">Where</th><th scope="col">Stack</th><th scope="col">Result</th></tr>
+          </thead>
+          <tbody>
+            {PROJECTS.map((p, row) => (
+              <tr id={p.id} style={`--row:${row}`} class:list={[p.href && 'has-link']}>
+                <th scope="row" data-label="Project">
+                  {p.href
+                    ? <a class="project-link" href={p.href}><span style="view-transition-name: case-title">{p.title}</span><Icon name="arrow" /></a>
+                    : p.title}
+                </th>
+                <td data-label="Where" style="--col:1">{p.where}</td>
+                <td data-label="Stack" class="mono" style="--col:2">{p.stack}</td>
+                <td data-label="Result" class="cell-pass" style="--col:3">{p.result}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="note">The Playwright migration has a full write-up. The other five are summarised here.</p>
+    </div>
+  </section>
+</Layout>

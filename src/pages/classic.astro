@@ -1,0 +1,107 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import Status from '../components/Status.astro';
+import Approval from '../components/Approval.astro';
+import { Picture } from 'astro:assets';
+import road from '../assets/road.jpg';
+import { ROLES, PROJECTS, RESUME } from '../data.js';
+
+const stages = [
+  { name: 'Profile', note: 'Who I am', href: '#top' },
+  { name: 'Results', note: 'Stage view', href: '#results' },
+  { name: 'Domain', note: 'Wealth platforms', href: '#domain' },
+  { name: 'Projects', note: 'Six projects', href: '/work/' },
+  { name: 'Contact', note: 'Waiting on you', href: '/contact/', gate: true },
+];
+const domain = ['Portfolio management', 'Trade order execution', 'Fees and charges engine', 'Transfers-out', 'Client onboarding', 'Multi-family and HNI models'];
+const selected = PROJECTS.slice(0, 3);
+---
+<Layout page="home" description="Sushanta Nandy, ISTQB-certified Lead SDET in Gurugram. Test automation for wealth and asset management platforms: Playwright, Java, Appium. 40% faster release cycles at FNZ.">
+  <section class="hero" id="top" aria-labelledby="hero-h">
+    <Picture class="hero-photo" src={road} formats={['avif', 'webp']} widths={[800, 1280, 1800, 2400]} sizes="100vw" alt="" loading="eager" fetchpriority="high" />
+    <svg class="hero-signal" viewBox="0 0 900 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <path pathLength="100" d="M543 287 C 500 300 470 330 452 368 L 380 516 L 330 620" />
+    </svg>
+    <div class="wrap hero-body">
+      <h1 id="hero-h" class="display">I test the systems that move other people's money.</h1>
+      <p class="hero-sub">SDET specialising in wealth and asset management platforms. 5+ years, ISTQB certified, Playwright, Java and Appium. Based in Gurugram.</p>
+      <div class="hero-actions">
+        <a class="btn btn-go btn-lg" href={RESUME} download><Icon name="download" />Download resume</a>
+        <a class="btn btn-ghost btn-lg" href="#results">See the results <Icon name="arrow" /></a>
+        <a class="btn btn-ghost btn-lg" href="/drive/">Drive the pipeline in 3D</a>
+      </div>
+    </div>
+    <nav class="pipeline" aria-label="Pipeline stages">
+      <ol class="wrap pipeline-row">
+        {stages.map((s, i) => (
+          <li class:list={['stage', s.gate && 'stage-gate']} style={`--i:${i}`}>
+            <a href={s.href}>
+              <span class="stage-name">{s.name}</span>
+              <Status state={s.gate ? 'waiting' : 'passed'} label={s.note} />
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </section>
+
+  <section class="section" id="results" aria-labelledby="results-h">
+    <div class="wrap">
+      <h2 id="results-h" class="h2">Three roles, shown the way I read a pipeline.</h2>
+      <div class="table-scroll">
+        <table class="stageview" data-reveal>
+          <thead>
+            <tr><th scope="col">Role</th><th scope="col">Automation</th><th scope="col">Pipeline</th><th scope="col">Specialism</th><th scope="col">Result</th></tr>
+          </thead>
+          <tbody>
+            {ROLES.map((r, row) => (
+              <tr style={`--row:${row}`}>
+                <th scope="row" data-label="Role"><span class="role-name">{r.company}</span><Status state={r.status} /></th>
+                <td data-label="Automation" style="--col:1">{r.automation}</td>
+                <td data-label="Pipeline" style="--col:2">{r.pipeline}</td>
+                <td data-label="Specialism" style="--col:3">{r.specialism}</td>
+                <td data-label="Result" class="cell-pass" style="--col:4">{r.results.map((x) => <span class="result-line">{x}</span>)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="domain" aria-labelledby="domain-h">
+    <div class="wrap band-grid">
+      <div>
+        <h2 id="domain-h" class="h2">Wealth platforms are where I'm most useful.</h2>
+        <p class="lede">A failed test here can mean a wrong fee or a broken trade. These are the flows I automate end to end.</p>
+      </div>
+      <ul class="checklist">
+        {domain.map((d) => <li><Icon name="check" />{d}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="work-h">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="work-h" class="h2">Selected work</h2>
+        <a class="link-arrow" href="/work/">All six projects <Icon name="arrow" /></a>
+      </div>
+      <ul class="worklist">
+        {selected.map((p) => (
+          <li>
+            <a class="workrow" href={p.href ?? `/work/#${p.id}`}>
+              <span class="workrow-title" style={p.href ? 'view-transition-name: case-title' : undefined}>{p.title}</span>
+              <span class="workrow-where">{p.where}</span>
+              <span class="workrow-result">{p.result}</span>
+              <Icon name="arrow" size={22} />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <Approval />
+</Layout>

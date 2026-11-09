@@ -1,0 +1,85 @@
+---
+// Code-drawn art per project: shows the idea of the work, nothing confidential.
+const { id } = Astro.props;
+const bg = {
+  'playwright-migration': ['#06301c', '#0b0b0b'],
+  virtuoso: ['#1c1440', '#0b0b0b'],
+  'core-e2e': ['#082a40', '#0b0b0b'],
+  'llm-generator': ['#3a2408', '#0b0b0b'],
+  'api-sandbox': ['#0a3436', '#0b0b0b'],
+  'mobile-scale': ['#3a0a24', '#0b0b0b'],
+}[id] ?? ['#111', '#000'];
+const G = '#2fd47a';
+const rows = Array.from({ length: 6 }, (_, i) => i);
+const cols = Array.from({ length: 10 }, (_, i) => i);
+---
+<svg viewBox="0 0 1600 900" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+  <defs>
+    <radialGradient id={`bg-${id}`} cx="25%" cy="20%" r="95%">
+      <stop offset="0" stop-color={bg[0]} /><stop offset="1" stop-color={bg[1]} />
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill={`url(#bg-${id})`} />
+
+  {id === 'playwright-migration' && (
+    <g>
+      <text x="820" y="200" fill="#9fb0a7" font-family="monospace" font-size="28">ONE AFTER ANOTHER</text>
+      <rect x="820" y="225" width="660" height="34" rx="17" fill="#2b3b33" />
+      <text x="820" y="345" fill="#9fb0a7" font-family="monospace" font-size="28">IN PARALLEL</text>
+      {[0, 1, 2].map((i) => <rect x="820" y={370 + i * 56} width="400" height="34" rx="17" fill={G} opacity={1 - i * .15} />)}
+      <text x="820" y="640" fill={G} font-family="sans-serif" font-weight="900" font-size="150">40%</text>
+    </g>
+  )}
+
+  {id === 'virtuoso' && (
+    <g>
+      {rows.map((r) => cols.map((c) => (
+        <rect x={760 + c * 78} y={150 + r * 78} width="62" height="62" rx="10" fill="none" stroke={(r * 3 + c) % 7 === 0 ? G : '#4b3f80'} stroke-width={(r * 3 + c) % 7 === 0 ? 4 : 2} />
+      )))}
+      <rect x="740" y="360" width="820" height="4" fill={G} opacity=".8" />
+    </g>
+  )}
+
+  {id === 'core-e2e' && (
+    <g>
+      {Array.from({ length: 14 }, (_, i) => <rect x={760 + i * 56} y={720 - (i + 1) ** 1.45 * 14} width="38" height={(i + 1) ** 1.45 * 14} rx="6" fill={i === 13 ? G : '#1d5a80'} />)}
+      <text x="760" y="790" fill="#7fa6c0" font-family="monospace" font-size="28">0 → 220+ SCENARIOS</text>
+    </g>
+  )}
+
+  {id === 'llm-generator' && (
+    <g font-family="monospace" font-size="30">
+      <text x="780" y="200" fill="#c9a46b">{'{ "amount": number,'}</text>
+      <text x="800" y="245" fill="#c9a46b">{'"currency": "GBP|EUR",'}</text>
+      <text x="800" y="290" fill="#c9a46b">{'"account": string }'}</text>
+      <path d="M1100 330 v60" stroke={G} stroke-width="4" />
+      {['amount: 0', 'amount: -1', 'currency: "XYZ"', 'account: ""', 'amount: 1e12'].map((t, i) => (
+        <g><rect x="780" y={420 + i * 62} width="640" height="48" rx="8" fill="#22180a" stroke="#5a4320" /><text x="800" y={453 + i * 62} fill="#efe2cc">{t}</text><text x="1380" y={453 + i * 62} fill={G}>✓</text></g>
+      ))}
+    </g>
+  )}
+
+  {id === 'api-sandbox' && (
+    <g font-family="monospace" font-size="34">
+      <rect x="760" y="170" width="760" height="460" rx="20" fill="#061c1d" stroke="#1d5456" />
+      <text x="800" y="250" fill="#7fc4c4">$ GET /accounts/42/holdings</text>
+      <text x="800" y="310" fill={G}>✓ 200 · from mock</text>
+      <text x="800" y="390" fill="#7fc4c4">$ GET /trades?status=open</text>
+      <text x="800" y="450" fill={G}>✓ 200 · from mock</text>
+      <text x="800" y="530" fill="#7fc4c4">$ POST /orders</text>
+      <text x="800" y="590" fill={G}>✓ 201 · from mock</text>
+    </g>
+  )}
+
+  {id === 'mobile-scale' && (
+    <g>
+      {Array.from({ length: 12 }, (_, i) => (
+        <g transform={`translate(${780 + (i % 6) * 120} ${170 + Math.floor(i / 6) * 260})`}>
+          <rect width="96" height="200" rx="18" fill="none" stroke="#8a3a66" stroke-width="3" />
+          <circle cx="48" cy="100" r="22" fill={i % 5 === 3 ? '#8a3a66' : G} />
+        </g>
+      ))}
+      <text x="780" y="760" fill="#d39abb" font-family="monospace" font-size="28">350+ SCRIPTS · RUN DAILY</text>
+    </g>
+  )}
+</svg>

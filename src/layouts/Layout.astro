@@ -1,0 +1,100 @@
+---
+import '@fontsource-variable/schibsted-grotesk';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import { PAGES, RESUME, LINKEDIN, GITHUB, EMAIL } from '../data.js';
+
+const { title, description, page, talk = false } = Astro.props;
+const current = PAGES.findIndex((p) => p.key === page);
+const fullTitle = page === 'home' ? 'Sushanta Nandy, Lead SDET' : `${title} · Sushanta Nandy`;
+const navLinks = PAGES.filter((p) => ['work', 'about', 'contact'].includes(p.key));
+const isCurrent = (key) => key === page || (key === 'work' && page === 'case');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b1b2e" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="nav">
+      <div class="wrap nav-row">
+        <a class="nav-name" href="/">Sushanta Nandy</a>
+        <nav aria-label="Main">
+          <ul class="nav-links">
+            {navLinks.map((p) => (
+              <li><a href={p.href} aria-current={isCurrent(p.key) ? 'page' : undefined}>{p.label}</a></li>
+            ))}
+            <li><a href="/drive/">3D</a></li>
+            <li><a class="btn btn-go btn-sm" href={RESUME} download>Resume</a></li>
+          </ul>
+        </nav>
+      </div>
+      <ol class="runbar" aria-hidden="true">
+        {PAGES.map((p, i) => (
+          <li class:list={['runbar-seg', i < current && 'is-passed', i === current && 'is-current', p.key === 'contact' && 'is-gate']}><span></span></li>
+        ))}
+      </ol>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    {talk && (
+      <section class="talk" aria-labelledby="talk-h">
+        <div class="wrap talk-row">
+          <h2 id="talk-h" class="talk-h">Let's talk.</h2>
+          <ul class="talk-links">
+            <li><a class="btn btn-go" href={`mailto:${EMAIL}`}><Icon name="mail" />Email</a></li>
+            <li><a class="btn btn-line" href={LINKEDIN} rel="me">LinkedIn</a></li>
+            <li><a class="btn btn-line" href={GITHUB} rel="me">GitHub</a></li>
+          </ul>
+        </div>
+      </section>
+    )}
+
+    <footer class="foot">
+      <div class="wrap foot-row">
+        <p>Sushanta Nandy, Gurugram</p>
+        <ul>
+          <li><a href={LINKEDIN} rel="me">LinkedIn</a></li>
+          <li><a href={GITHUB} rel="me">GitHub</a></li>
+        </ul>
+      </div>
+    </footer>
+
+    <script>
+      // Reveal-once: content is visible without JS; this only replays entrances when a block first scrolls in.
+      const els = document.querySelectorAll('[data-reveal]');
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      }, { rootMargin: '0px 0px -12% 0px' });
+      els.forEach((el) => io.observe(el));
+
+      // Copy-email buttons
+      for (const btn of document.querySelectorAll('[data-copy]')) {
+        btn.addEventListener('click', async () => {
+          const live = document.querySelector('[data-copy-status]');
+          try { await navigator.clipboard.writeText(btn.dataset.copy); } catch {
+            // Clipboard blocked: select the address so the visitor can copy it by hand.
+            const link = btn.parentElement.querySelector('.email');
+            if (link) getSelection().selectAllChildren(link);
+            if (live) live.textContent = "Couldn't copy. The address is selected; press Ctrl+C.";
+            return;
+          }
+          if (live) live.textContent = 'Email address copied';
+          btn.classList.add('is-copied');
+          setTimeout(() => btn.classList.remove('is-copied'), 1800);
+        });
+      }
+    </script>
+  </body>
+</html>

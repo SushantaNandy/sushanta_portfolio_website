@@ -1,0 +1,28 @@
+---
+import Black from '../layouts/Black.astro';
+import { EMAIL, RESUME, LINKEDIN, GITHUB } from '../data.js';
+---
+<Black page="contact" title="Contact" description="Contact Sushanta Nandy, Lead SDET in Gurugram: email, résumé, LinkedIn and GitHub.">
+  <section class="contact" aria-labelledby="contact-h">
+    <p class="mono kicker">Hiring for a test automation role?</p>
+    <h1 id="contact-h" class="c-h">Let's put your next release<br />through a proper gate.</h1>
+    <a class="btn btn-go" href={`mailto:${EMAIL}`}>Get in touch</a>
+    <p class="c-mail"><span data-email>{EMAIL}</span> <button type="button" class="btn c-copy" data-copy={EMAIL}>Copy</button></p>
+    <ul class="c-links">
+      <li><a class="btn" href={RESUME} download>Download résumé</a></li>
+      <li><a class="btn" href={LINKEDIN} rel="me">LinkedIn</a></li>
+      <li><a class="btn" href={GITHUB} rel="me">GitHub</a></li>
+    </ul>
+    <p class="mono c-loc">Gurugram, India</p>
+  </section>
+</Black>
+
+<style>
+  .contact { min-height: 100svh; display: grid; place-content: center; justify-items: center; text-align: center; gap: 28px; padding: 140px var(--pad) 80px; }
+  .contact .kicker { margin: 0; color: var(--soft); }
+  .c-h { margin: 0; font-weight: 750; font-size: clamp(1.8rem, 4.4vw, 3.6rem); line-height: 1.15; letter-spacing: -.02em; }
+  .c-mail { margin: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; font-size: 1.1rem; }
+  .c-copy { min-height: 40px; padding: 6px 16px; }
+  .c-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .c-loc { color: var(--dim); font-size: .8rem; margin: 0; }
+</style>

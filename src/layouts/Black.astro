@@ -1,0 +1,122 @@
+---
+import '@fontsource-variable/schibsted-grotesk';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/black.css';
+import { RESUME, EMAIL, LINKEDIN, GITHUB } from '../data.js';
+
+const { title, description, page } = Astro.props;
+const fullTitle = title ? `${title} · Sushanta Nandy` : 'Sushanta Nandy · Lead SDET';
+const nav = [
+  { key: 'work', label: 'Work', href: '/work/' },
+  { key: 'about', label: 'About', href: '/about/' },
+  { key: 'contact', label: 'Contact', href: '/contact/', hideSm: true },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <!-- The site is always black, in both OS themes, so one colour matches the top of every page. -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="top">
+      <a class="mark" href="/" aria-label="Sushanta Nandy, home">S<span aria-hidden="true">—</span>N</a>
+      <nav aria-label="Main">
+        <ul>
+          {nav.map((n) => (
+            <li class:list={[n.hideSm && 'hide-sm']}><a href={n.href} aria-current={page === n.key ? 'page' : undefined}>{n.label}</a></li>
+          ))}
+          <li><a class="pill" href={RESUME} download>Resume</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main"><slot /></main>
+
+    <footer class="foot">
+      <div class="foot-grid">
+        <div class="foot-info">
+          <a class="foot-mail" href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          <p>Gurugram, India</p>
+        </div>
+        <ul class="foot-nav">
+          <li><a href="/work/">Work</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/contact/">Contact</a></li>
+          <li><a href="/drive/">Drive in 3D</a></li>
+        </ul>
+        <ul class="foot-tags mono">
+          <li><a href={LINKEDIN} rel="me">#LinkedIn</a></li>
+          <li><a href={GITHUB} rel="me">#GitHub</a></li>
+          <li><a href={RESUME} download>#Resume</a></li>
+        </ul>
+      </div>
+      {page !== 'contact' && (
+        <>
+          <h2 class="mega mega-sm"><span>Your next release</span><span>deserves a gate</span></h2>
+          <p class="lead">Hiring a Lead SDET for a wealth or fintech platform? Email me, or grab the résumé.</p>
+          <a class="cta" href={`mailto:${EMAIL}`} data-cta>
+            <span class="sr">Get in touch by email</span>
+            <svg class="cta-line" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true">
+              <path pathLength="1" d="M-20 400 C 160 400 220 240 330 250 C 450 262 420 390 330 360 C 230 326 300 170 470 150 C 640 130 700 260 820 210 C 930 165 960 60 1220 30" />
+            </svg>
+            <span class="cta-word" aria-hidden="true">
+              {'Get in touch'.split('').map((c, i) => (
+                <span class="cta-ch" style={`--i:${i}; --r:${(i % 2 ? 1 : -1) * (6 + (i * 7) % 11)}deg`}>{c === ' ' ? ' ' : c}</span>
+              ))}
+              <span class="cta-ch cta-arrow" style="--i:12; --r:0deg">→</span>
+            </span>
+          </a>
+        </>
+      )}
+      <p class="copy mono">© {new Date().getFullYear()} Sushanta Nandy</p>
+    </footer>
+
+    <script>
+      // Reveal once on scroll; content is visible without JS.
+      // Stagger siblings that reveal together (strength columns, list rows, cards).
+      // Only for items that enter together (a grid row, a run of list rows). Panels that scroll
+      // in one at a time get no delay; they only need their stacking offset.
+      document.querySelectorAll('.honours, .cards-grid').forEach((g) =>
+        [...g.children].forEach((c, i) => { const t = c.matches('[data-reveal]') ? c : c.querySelector('[data-reveal]'); if (t) t.style.setProperty('--i', String(i % 4)); }));
+      document.querySelectorAll('.role').forEach((r, i) => r.style.setProperty('--stack', String(i)));
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+      }, { rootMargin: '0px 0px -10% 0px' });
+      document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+
+      // Footer CTA: draw the line, then pop the letters, once it is mostly on screen.
+      // Also drives any self-drawing outline ([data-draw]).
+      const drawIO = new IntersectionObserver((entries) => {
+        for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); drawIO.unobserve(e.target); }
+      }, { threshold: 0.45 });
+      document.querySelectorAll('[data-cta], [data-draw]').forEach((el) => drawIO.observe(el));
+
+      for (const btn of document.querySelectorAll('[data-copy]')) {
+        const label = btn.textContent;
+        const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Blur crossfade: the label softens, swaps, and sharpens, so it reads as one button changing state.
+        const swap = async (text) => {
+          const out = still ? [{ opacity: 1 }, { opacity: 0.4 }] : [{ opacity: 1, filter: 'blur(0)' }, { opacity: 0.7, filter: 'blur(2px)' }];
+          await btn.animate(out, { duration: 100, easing: 'ease', fill: 'forwards' }).finished;
+          btn.textContent = text;
+          btn.animate(out.slice().reverse(), { duration: 100, easing: 'ease', fill: 'forwards' });
+        };
+        btn.addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(btn.dataset.copy); swap('Copied'); }
+          catch { swap('Press Ctrl+C'); getSelection().selectAllChildren(document.querySelector('[data-email]')); }
+          clearTimeout(btn._t);
+          btn._t = setTimeout(() => swap(label), 1800);
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+---
+import Black from '../../layouts/Black.astro';
+import ProjectArt from '../../components/ProjectArt.astro';
+---
+<Black page="work" title="Moving a regression suite to Playwright" description="Case study: Sushanta Nandy led the migration of legacy regression suites to Playwright at FNZ Group, with parallel execution on BrowserStack and Jenkins. 40% faster release cycles.">
+  <section class="pagehead" aria-labelledby="case-h">
+    <p class="kicker mono">Case study · FNZ Group · Feb 2026 – now</p>
+    <h1 id="case-h" class="mega mega-sm"><span>Moving a regression</span><span>suite to Playwright</span></h1>
+  </section>
+
+  <div class="hero-art" style="view-transition-name: case-art"><ProjectArt id="playwright-migration" /></div>
+
+  <section class="sec facts" aria-label="Summary">
+    <div><p class="big">40%</p><p class="mono small">Faster release cycles</p></div>
+    <div><p class="mono small">Role</p><p>Automation Test Analyst</p></div>
+    <div><p class="mono small">Clients</p><p>Stonehage Fleming, Quilter</p></div>
+    <div><p class="mono small">Stack</p><p>Playwright · BrowserStack · Jenkins</p></div>
+  </section>
+
+  <section class="sec two" aria-labelledby="did-h">
+    <h2 id="did-h" class="mega mega-sm"><span>What</span><span>I did</span></h2>
+    <div class="copy-col">
+      <p>Led the complete migration of legacy automated regression suites to Playwright. Standardised parallel execution and deployed the suites to BrowserStack and Jenkins, so regression runs side by side instead of one after another.</p>
+      <p>The result was release cycles 40% faster, across the Stonehage Fleming and Quilter portfolios: trading, portfolio management, banking models, transfers-out and client onboarding.</p>
+      <p class="note mono">The bar chart above illustrates the idea, not measured data.</p>
+    </div>
+  </section>
+
+  <a class="next" href="/work/#virtuoso">
+    <span class="mono small">Next project</span>
+    <span class="next-title">AI testing with Virtuoso →</span>
+  </a>
+</Black>
+
+<style>
+  .hero-art { margin: 0 var(--pad); aspect-ratio: 16 / 7; border-radius: clamp(16px, 2.4vw, 32px); overflow: hidden; }
+  .hero-art :global(svg) { width: 100%; height: 100%; }
+  .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; padding-bottom: 0; }
+  .facts p { margin: 0 0 6px; }
+  .big { font-weight: 900; font-size: clamp(3rem, 7vw, 6rem); line-height: .9; color: var(--go); }
+  .small { font-size: .8rem; color: var(--dim); }
+  .two { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px 64px; }
+  .copy-col p { margin: 0 0 18px; color: var(--soft); line-height: 1.7; font-size: 1.08rem; }
+  .note { font-size: .75rem !important; color: var(--dim) !important; }
+  .next { display: grid; gap: 8px; margin: 0 var(--pad) clamp(60px, 8vw, 120px); padding: clamp(32px, 5vw, 64px) 0; border-block: 1px solid var(--line); text-decoration: none; }
+  .next-title { font-weight: 850; text-transform: uppercase; font-size: clamp(1.8rem, 5vw, 4.4rem); letter-spacing: -.03em; transition: color 300ms var(--ease); }
+  @media (hover: hover) and (pointer: fine) { .next:hover .next-title { color: var(--go); } }
+  .next:active .next-title { color: var(--go); }
+  @media (max-width: 760px) { .facts { grid-template-columns: 1fr 1fr; } .two { grid-template-columns: 1fr; } .hero-art { aspect-ratio: 4 / 3; } }
+</style>

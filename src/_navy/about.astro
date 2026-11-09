@@ -1,0 +1,66 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Status from '../components/Status.astro';
+
+const history = [
+  { company: 'FNZ Group', role: 'Automation Test Analyst', when: 'Feb 2026 to present', where: 'Gurugram', state: 'running', note: 'Running now' },
+  { company: 'Deutsche Telekom Digital Labs', role: 'SDET', when: 'Jan 2024 to Jan 2026', where: 'Gurugram', state: 'passed' },
+  { company: 'Moolya Software Testing', role: 'Software Test Engineer', when: 'Jan 2021 to Jan 2024', where: 'Bengaluru', state: 'passed', award: 'Best Mentor Award, 2023' },
+];
+const skills = [
+  { group: 'Automation', items: ['Playwright', 'Selenium', 'Appium', 'RestAssured', 'TestNG', 'Pytest'] },
+  { group: 'Infrastructure', items: ['Jenkins', 'BrowserStack', 'GitLab', 'TeamCity', 'OpenSearch'] },
+  { group: 'AI and virtualisation', items: ['Virtuoso', 'LLM test generation', 'Charles Proxy', 'Mockoon'] },
+];
+const credentials = ['ISTQB Certified', 'AI For Everyone (DeepLearning.AI)', 'CEH v11 (Skillsoft)', 'HackerRank Java Certified', '400+ LeetCode problems solved'];
+---
+<Layout page="about" title="About" talk description="About Sushanta Nandy: from mobile test scripts at Moolya to automation strategy for wealth platforms at FNZ Group. Skills, certifications and education.">
+  <section class="pagehead" aria-labelledby="page-h">
+    <div class="wrap">
+      <h1 id="page-h" class="display display-md">From mobile test scripts to automation strategy for wealth platforms.</h1>
+      <p class="hero-sub">I also run delivery: burn-down reports, resource planning, and milestone tracking for senior stakeholders.</p>
+    </div>
+  </section>
+
+  <div class="wrap about">
+    <section aria-labelledby="hist-h">
+      <h2 id="hist-h" class="h3">Build history</h2>
+      <ol class="history" data-reveal>
+        {history.map((h) => (
+          <li>
+            <Status state={h.state} label={h.note} />
+            <h3 class="history-co">{h.company}</h3>
+            <p>{h.role}</p>
+            <p class="meta">{h.when} · {h.where}</p>
+            {h.award && <p class="award">{h.award}</p>}
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <div class="about-side">
+      {skills.map((s) => (
+        <section aria-label={s.group}>
+          <h2 class="h3">{s.group}</h2>
+          <ul class="tags" data-reveal>
+            {s.items.map((x, i) => <li style={`--i:${i}`}>{x}</li>)}
+          </ul>
+        </section>
+      ))}
+
+      <section aria-labelledby="cred-h">
+        <h2 id="cred-h" class="h3">Credentials</h2>
+        <ul class="plainlist">{credentials.map((c) => <li>{c}</li>)}</ul>
+      </section>
+
+      <section aria-labelledby="edu-h">
+        <h2 id="edu-h" class="h3">Education and languages</h2>
+        <ul class="plainlist">
+          <li>B.Tech, Mechanical Engineering, OEC</li>
+          <li>Japanese Language Certificate, St. Stephen's College</li>
+          <li>English (full professional), German (Goethe A1–A2), Japanese (basic)</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</Layout>

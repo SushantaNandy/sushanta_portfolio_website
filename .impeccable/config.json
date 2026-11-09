@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "marquee",
+        "value": "*",
+        "files": [
+          "src/pages/index.astro"
+        ],
+        "createdAt": "2026-11-09T22:35:16.720Z",
+        "reason": "user confirmed: asked for a plan-az.com-style homepage and approved a design brief listing scrolling marquees; marquee text is repeated decoration with an sr-only label, stopped under prefers-reduced-motion"
+      }
+    ]
+  }
+}
