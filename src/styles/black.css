@@ -71,6 +71,10 @@ img, svg { display: block; max-width: 100%; }
 .cards-grid .card { aspect-ratio: 4 / 5; }
 @media (max-width: 760px) { .cards-big .card { aspect-ratio: 4 / 5; } }
 .card { background: #0b0b0b; }
+/* Respond the instant a card is pressed, not on release. Scale lives on the meta layer so it
+   never fights the scroll-driven clip/scale on the card itself. */
+.card-meta { transition: transform 100ms var(--ease); }
+.card:active .card-meta { transform: scale(.98); transform-origin: 0 100%; }
 /* Tall cards: art takes the top, the title gets its own space below instead of covering it. */
 @media (max-width: 760px) { .cards-big .card-art { bottom: 40%; } }
 .cards-grid .card-art { bottom: 40%; }
@@ -194,6 +198,12 @@ img, svg { display: block; max-width: 100%; }
 
 /* Experience panels pin and stack as you scroll. */
 @media (min-width: 761px) { .role { position: sticky; top: calc(84px + var(--stack, 0) * 18px); } }
+
+/* Higher contrast when the visitor asks for it: lift the grey text and hairlines. */
+@media (prefers-contrast: more) {
+  :root { --soft: #f0f0ec; --dim: #c8c8c4; --line: #6a6a6a; }
+  .runrow { color: #8d8d8a; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .track, .runrow span { animation: none; }
