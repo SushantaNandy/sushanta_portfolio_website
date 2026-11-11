@@ -10,7 +10,7 @@ const fullTitle = title ? `${title} · Sushanta Nandy` : 'Sushanta Nandy · SDET
 const nav = [
   { key: 'work', label: 'Work', href: '/work/' },
   { key: 'about', label: 'About', href: '/about/' },
-  { key: 'contact', label: 'Contact', href: '/contact/', hideSm: true },
+  { key: 'contact', label: 'Contact', href: '/contact/' },
 ];
 ---
 <!doctype html>
@@ -33,12 +33,32 @@ const nav = [
       <nav aria-label="Main">
         <ul>
           {nav.map((n) => (
-            <li class:list={[n.hideSm && 'hide-sm']}><a href={n.href} aria-current={page === n.key ? 'page' : undefined}>{n.label}</a></li>
+            <li class="nav-link"><a href={n.href} aria-current={page === n.key ? 'page' : undefined}>{n.label}</a></li>
           ))}
+          <li class="nav-menu"><button type="button" class="menu-btn" aria-haspopup="dialog" aria-controls="menu-sheet">Menu</button></li>
           <li><a class="pill" href={RESUME} download>Resume</a></li>
         </ul>
       </nav>
     </header>
+
+    <!-- Phone menu: a bottom sheet you can drag or flick down to close (touch or mouse). -->
+    <dialog class="sheet" id="menu-sheet" aria-label="Menu">
+      <div class="sheet-scrim" data-sheet-close></div>
+      <div class="sheet-panel" data-sheet-panel>
+        <div class="sheet-grip" aria-hidden="true"><span></span></div>
+        <ul class="sheet-links">
+          <li><a href="/" aria-current={!page ? 'page' : undefined}>Home</a></li>
+          {nav.map((n) => <li><a href={n.href} aria-current={page === n.key ? 'page' : undefined}>{n.label}</a></li>)}
+        </ul>
+        <ul class="sheet-extra mono">
+          <li><a href={`mailto:${EMAIL}`}>Email</a></li>
+          <li><a href={LINKEDIN} rel="me">LinkedIn</a></li>
+          <li><a href={GITHUB} rel="me">GitHub</a></li>
+          <li><a href={RESUME} download>Résumé</a></li>
+        </ul>
+        <button type="button" class="sheet-close" data-sheet-close>Close</button>
+      </div>
+    </dialog>
 
     <main id="main"><slot /></main>
 
@@ -93,6 +113,78 @@ const nav = [
     <ChatWidget />
 
     <script>
+      // Menu sheet. Track phase: while the pointer is down the panel follows it 1:1 (direct transform,
+      // no easing). Release phase: dismiss on distance OR a fast flick, else snap back. CSS transitions,
+      // never keyframes, so it can be caught and dragged again mid-flight.
+      {
+        const sheet = document.getElementById('menu-sheet');
+        const panel = sheet.querySelector('[data-sheet-panel]');
+        const scrim = sheet.querySelector('.sheet-scrim');
+        const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const SHEET = 'cubic-bezier(0.32, 0.72, 0, 1)', OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
+        let drag = null, dragged = false, closing = 0;
+        const place = (y, ms = 0, ease = SHEET) => {
+          const t = ms && !still ? `${ms}ms ${ease}` : '0ms';
+          panel.style.transition = `transform ${t}`;
+          scrim.style.transition = `opacity ${t}`;
+          panel.style.transform = `translate3d(0, ${y}px, 0)`;
+          scrim.style.opacity = String(Math.max(0, 1 - y / panel.offsetHeight)); // overlay follows the panel
+        };
+        const open = () => {
+          clearTimeout(closing);
+          if (!sheet.open) sheet.showModal();
+          place(panel.offsetHeight);
+          panel.getBoundingClientRect(); // commit the start position before animating in
+          place(0, 500);
+        };
+        const close = (ms = 300, ease = SHEET) => {
+          place(panel.offsetHeight, ms, ease);
+          clearTimeout(closing);
+          closing = setTimeout(() => sheet.close(), still ? 0 : ms);
+        };
+        document.querySelector('.menu-btn').addEventListener('click', open);
+        sheet.querySelectorAll('[data-sheet-close]').forEach((el) => el.addEventListener('click', () => close()));
+        sheet.addEventListener('cancel', (e) => { e.preventDefault(); close(); }); // Esc animates out too
+
+        panel.addEventListener('pointerdown', (e) => {
+          if (e.button !== 0) return;
+          clearTimeout(closing); // caught mid-close: it stays open under the finger
+          const y = new DOMMatrix(getComputedStyle(panel).transform).m42;
+          drag = { id: e.pointerId, y0: e.clientY, start: y, moved: false, hist: [{ y, t: e.timeStamp }] };
+          place(y);
+        });
+        panel.addEventListener('pointermove', (e) => {
+          if (!drag || e.pointerId !== drag.id) return;
+          const dy = e.clientY - drag.y0;
+          if (!drag.moved) {
+            if (Math.abs(dy) < 6) return; // small slop so taps on links stay taps
+            drag.moved = true;
+            try { panel.setPointerCapture(e.pointerId); } catch {} // keep tracking outside the panel; harmless if unsupported
+          }
+          let y = drag.start + dy;
+          if (y < 0) y *= 0.2; // rubber-band past the top instead of a hard stop
+          place(y);
+          drag.hist.push({ y, t: e.timeStamp });
+          if (drag.hist.length > 6) drag.hist.shift();
+        });
+        const release = (e) => {
+          if (!drag || e.pointerId !== drag.id) return;
+          const { moved, hist } = drag;
+          drag = null;
+          const y = new DOMMatrix(getComputedStyle(panel).transform).m42, h = panel.offsetHeight;
+          if (!moved) { if (y !== 0) place(0, 200, OUT); return; } // a tap that caught it mid-flight
+          dragged = true;
+          setTimeout(() => (dragged = false), 0);
+          const a = hist.find((p) => e.timeStamp - p.t < 80) ?? hist[0], b = hist[hist.length - 1];
+          const v = b.t > a.t ? (b.y - a.y) / (b.t - a.t) : 0; // px per ms, positive is downward
+          if (y > h * 0.4 || v > 0.5) close(Math.min(400, Math.max(150, (h - y) / Math.max(v, 1))), OUT); // leaves at the flick's speed
+          else place(0, 200, OUT); // didn't make it: snap back quickly
+        };
+        panel.addEventListener('pointerup', release);
+        panel.addEventListener('pointercancel', release);
+        panel.addEventListener('click', (e) => { if (dragged) { e.preventDefault(); e.stopPropagation(); } }, true); // a drag is not a tap
+      }
+
       // Reveal once on scroll; content is visible without JS.
       // Stagger siblings that reveal together (strength columns, list rows, cards).
       // Only for items that enter together (a grid row, a run of list rows). Panels that scroll

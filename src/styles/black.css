@@ -41,7 +41,7 @@ img, svg { display: block; max-width: 100%; }
   .pill:hover { background: var(--fg); color: var(--bg); }
   .top ul:hover a:not(.pill):not(:hover) { opacity: .55; } /* the hovered link stays bright, its neighbours step back */
 }
-@media (max-width: 640px) { .top ul { gap: 14px; } .top li.hide-sm { display: none; } }
+@media (max-width: 640px) { .top ul { gap: 14px; } }
 
 /* Big type */
 .mega { margin: 0; font-weight: 850; text-transform: uppercase; font-size: clamp(2.6rem, 8.4vw, 8.5rem); line-height: .9; letter-spacing: -.035em; display: grid; }
@@ -238,3 +238,26 @@ img, svg { display: block; max-width: 100%; }
 .gate-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .gate-copy { position: relative; z-index: 1; padding: clamp(32px, 5vw, 64px) var(--pad) 0; max-width: 40ch; pointer-events: none; }
 .gate-h { margin: 0; font-weight: 750; font-size: clamp(1.4rem, 2.6vw, 2.2rem); line-height: 1.15; letter-spacing: -.02em; text-wrap: balance; }
+
+/* Phone navigation: links move into a draggable bottom sheet. */
+.nav-menu { display: none; }
+.menu-btn { background: none; border: 0; padding: 10px 0; color: inherit; font: 600 .95rem var(--sans); cursor: pointer; }
+.menu-btn:active { opacity: .6; }
+@media (max-width: 640px) { .nav-link { display: none; } .nav-menu { display: list-item; } }
+.sheet { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; overflow: hidden; }
+.sheet::backdrop { background: transparent; }
+html:has(.sheet[open]) { overflow: hidden; } /* the page behind stays put while the menu is open */
+.sheet-scrim { position: absolute; inset: 0; background: rgb(0 0 0 / .62); opacity: 0; }
+.sheet-panel { position: absolute; left: 0; right: 0; bottom: 0; background: #0f0f0f; color: var(--fg); border-top: 1px solid var(--line); border-radius: 22px 22px 0 0;
+  padding: 6px max(22px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(22px, env(safe-area-inset-left, 0px));
+  transform: translate3d(0, 100%, 0); will-change: transform;
+  touch-action: none; /* the whole panel is the drag surface; the page can't scroll behind it anyway */ }
+.sheet-grip { display: grid; place-items: center; height: 30px; cursor: grab; }
+.sheet-grip span { width: 42px; height: 5px; border-radius: 99px; background: #3a3a3a; }
+.sheet-links a { display: block; padding: 8px 0; text-decoration: none; font-weight: 850; text-transform: uppercase; letter-spacing: -.03em; font-size: clamp(2rem, 11vw, 2.8rem); line-height: 1; }
+.sheet-links a[aria-current] { color: var(--go); }
+.sheet-links a:active { opacity: .6; }
+.sheet-extra { display: flex; flex-wrap: wrap; gap: 4px 20px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .8rem; color: var(--soft); }
+.sheet-extra a { display: inline-block; padding: 10px 0; text-decoration: none; }
+.sheet-close { margin-top: 14px; width: 100%; min-height: 48px; border: 1.5px solid var(--line); border-radius: 999px; background: none; color: var(--fg); font: 600 1rem var(--sans); cursor: pointer; transition: transform 160ms var(--ease); }
+.sheet-close:active { transform: scale(.97); }
