@@ -54,6 +54,8 @@ const tokens = ['</>', '✓', '{ }', '200', 'PASS', '✓'];
 <style>
   .swing { --w: clamp(150px, 17vw, 250px); position: absolute; top: 100%; left: calc(50% - var(--w) / 2); width: var(--w); transform-origin: 50% 0; will-change: transform; cursor: grab; touch-action: none; /* the swing owns the drag; the page scrolls everywhere else */ }
   .swing.is-held { cursor: grabbing; }
+  /* On touch screens a vertical swipe must still scroll the page; taps push the swing. */
+  @media (pointer: coarse) { .swing { touch-action: pan-y; } }
   .swing svg { width: 100%; height: auto; overflow: visible; }
   /* The drawing is the fallback; once the lit 3D scene is up it takes over and the span stays as the grab target. */
   .swing-3d { position: absolute; display: none; pointer-events: none; }

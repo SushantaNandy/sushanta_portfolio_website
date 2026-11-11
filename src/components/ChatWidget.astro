@@ -26,7 +26,7 @@ const suggestions = [
     </div>
     <form class="chat-form" data-chat-form>
       <label class="sr" for="chat-input">Your question</label>
-      <input id="chat-input" name="q" type="text" autocomplete="off" maxlength="1000" placeholder="Type a question…" required />
+      <input id="chat-input" name="q" type="text" autocomplete="off" enterkeyhint="send" maxlength="1000" placeholder="Type a question…" required />
       <button type="submit" class="chat-send" aria-label="Send question">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </button>
@@ -45,13 +45,13 @@ const suggestions = [
   .chat-open[aria-expanded='true'] { background: #000; color: var(--fg); }
   .chat-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--go); box-shadow: 0 0 0 3px rgb(47 212 122 / .25); }
 
-  .chat-panel { width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100svh - 110px)); display: flex; flex-direction: column; background: #0b0b0b; color: var(--fg); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px -16px rgb(0 0 0 / .9); overflow: hidden; transform-origin: bottom right; }
+  .chat-panel { width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100dvh - 110px)); /* dvh: shrinks with the on-screen keyboard */ display: flex; flex-direction: column; background: #0b0b0b; color: var(--fg); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px -16px rgb(0 0 0 / .9); overflow: hidden; transform-origin: bottom right; }
   .chat-panel[hidden] { display: none; }
   .chat-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; padding: 16px 16px 12px 18px; border-bottom: 1px solid var(--line); }
   .chat-title { margin: 0; font-size: 1.05rem; font-weight: 700; }
   .chat-sub { margin: 4px 0 0; font-size: .82rem; color: var(--dim); }
   .chat-x { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%; background: none; color: var(--soft); cursor: pointer; }
-  .chat-x:hover { background: #1a1a1a; color: var(--fg); }
+  .chat-x:active { background: #1a1a1a; color: var(--fg); }
   .chat-log { flex: 1; min-height: 120px; overflow-y: auto; padding: 16px 18px; display: grid; align-content: start; gap: 10px; overscroll-behavior: contain; }
   /* Bubbles are created by script, so they don't carry Astro's scope attribute: style them globally under the log. */
   .chat-log :global(.msg) { margin: 0; max-width: 88%; padding: 10px 13px; border-radius: 14px; font-size: .93rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -71,6 +71,7 @@ const suggestions = [
   .chat-note { margin: 0; padding: 0 18px 12px; font-size: .72rem; color: var(--dim); }
   @media (hover: hover) and (pointer: fine) {
     .chip-q:hover { border-color: var(--soft); color: var(--fg); }
+    .chat-x:hover { background: #1a1a1a; color: var(--fg); }
   }
   @media (prefers-reduced-motion: no-preference) {
     .chat-panel:not([hidden]) { animation: chat-in 220ms var(--ease) both; }

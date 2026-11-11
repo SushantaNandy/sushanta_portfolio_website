@@ -105,7 +105,9 @@ export function createSwing3D(canvas, swingEl) {
     pivot.position.copy(p);
     rig.scale.setScalar(swingEl.offsetWidth / 240);
 
-    const floorY = toWorld(0, scrollCue ? scrollCue.offsetTop - 44 : H * 0.88).y;
+    const cueY = toWorld(0, scrollCue ? scrollCue.offsetTop - 44 : H * 0.88).y;
+    // On tall phones "(Scroll)" is far below the swing; keep the ground close enough for the shadow to read.
+    const floorY = Math.max(cueY, p.y - 420 * rig.scale.x);
     const lampPos = V(p.x, p.y + 240, 70);
     lamp.position.copy(lampPos);
     bulb.position.copy(lampPos);
