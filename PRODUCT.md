@@ -20,7 +20,7 @@ A personal portfolio site that gets Sushanta Nandy hired as an SDET / QA automat
 
 ## Positioning
 
-ISTQB-certified SDET (5+ years) specialising in wealth and asset management platforms: trading, portfolios, fees and charges, onboarding, HNI models. Migrates legacy suites to Playwright and builds AI-assisted test tooling. The site itself is framed as a CI/CD pipeline run that ends waiting for the recruiter's approval.
+ISTQB-certified SDET (nearly 5 years, since Jan 2022) specialising in wealth and asset management platforms: trading, portfolios, fees and charges, onboarding, HNI models. Migrates legacy suites to Playwright and builds AI-assisted test tooling. The site itself is framed as a CI/CD pipeline run that ends waiting for the recruiter's approval.
 
 ## Capabilities and Constraints
 

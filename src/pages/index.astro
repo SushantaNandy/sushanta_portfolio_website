@@ -1,10 +1,10 @@
 ---
 import Black from '../layouts/Black.astro';
-import Card from '../components/Card.astro';
 import Swing from '../components/Swing.astro';
 import Strengths from '../components/Strengths.astro';
+import Story from '../components/Story.astro';
 import { PROJECTS } from '../data.js';
-import { ROLES_LONG, TOOLS } from '../content.js';
+import { TOOLS } from '../content.js';
 
 const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).padStart(3, '0')}`);
 ---
@@ -25,23 +25,32 @@ const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).pa
       <span>other people's money,</span>
       <span class="indent">end to end</span>
     </h2>
-    <p class="lead" data-reveal>ISTQB-certified SDET with 5+ years in wealth and asset management. I migrate legacy suites to Playwright, build AI-assisted test tooling, and help run delivery for my pod. Based in Gurugram, India.</p>
+    <p class="lead" data-reveal>ISTQB-certified SDET with nearly 5 years in test automation, now in wealth and asset management. I migrate legacy suites to Playwright, build AI-assisted test tooling, and help run delivery for my pod. Based in Gurugram, India.</p>
   </section>
 
   <section class="sec" aria-labelledby="work-h">
     <p class="kicker mono">Selected work</p>
     <h2 id="work-h" class="mega mega-sm" data-reveal>
-      <span>Six projects.</span>
-      <span>Each one shipped</span>
-      <span>with a number</span>
-      <span>you can check.</span>
+      <span>Nine projects.</span>
+      <span>From a startup</span>
+      <span>to an AI that</span>
+      <span>writes the tests.</span>
     </h2>
-    <div class="cards cards-big">
-      {PROJECTS.slice(0, 4).map((p) => <Card p={p} />)}
-    </div>
+    <ol class="worklist">
+      {PROJECTS.map((p, i) => (
+        <li data-reveal>
+          <a href={`/work/#${p.id}`}>
+            <span class="wl-n mono">{String(i + 1).padStart(2, '0')}</span>
+            <span class="wl-title">{p.title}</span>
+            <span class="wl-result">{p.result}</span>
+            <span class="wl-where mono">{p.where}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
     <a class="marquee marquee-link" href="/work/">
-      <span class="sr">See all six projects</span>
-      <span class="track" aria-hidden="true">{Array.from({ length: 8 }, () => <span>See all six projects <b>→</b></span>)}</span>
+      <span class="sr">See how each one was built</span>
+      <span class="track" aria-hidden="true">{Array.from({ length: 8 }, () => <span>See how each one was built <b>→</b></span>)}</span>
     </a>
   </section>
 
@@ -64,22 +73,7 @@ const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).pa
     <p class="lead center" data-reveal>I decide what is worth automating, build the framework, wire it into Jenkins and BrowserStack, and report progress as burn-downs and goal-wise status that stakeholders can act on.</p>
   </section>
 
-  <section class="sec" aria-labelledby="exp-h">
-    <p class="kicker mono">Experience</p>
-    <h2 id="exp-h" class="mega mega-sm" data-reveal><span>Three teams,</span><span>one through-line</span></h2>
-    <div class="roles" style="margin-top: clamp(40px, 6vw, 80px)">
-      {ROLES_LONG.map((r) => (
-        <article class="role" style={`--tint:${r.tint}`} data-reveal>
-          <p class="r-tag mono">{r.tag}</p>
-          <h3 class="r-title">{r.title.map((l) => <span>{l}</span>)}</h3>
-          <div class="r-body">
-            <p>{r.body}</p>
-            <ul>{r.points.map((p) => <li>{p}</li>)}</ul>
-          </div>
-        </article>
-      ))}
-    </div>
-  </section>
+  <Story />
 </Black>
 
 <style>
@@ -104,6 +98,19 @@ const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).pa
   @keyframes in-rise { from { opacity: 0; transform: translateY(18px); } }
   @keyframes in-rise-sm { from { opacity: 0; transform: translateY(8px); } }
   @media (prefers-reduced-motion: reduce) { .in, .in-lead, .in-support { animation: in-fade 300ms ease both; } }
+  .worklist { list-style: none; margin: clamp(40px, 6vw, 80px) 0 0; padding: 0; border-top: 1px solid var(--line); }
+  .worklist a { display: grid; grid-template-columns: 4ch minmax(0, 1.2fr) minmax(0, 1fr) 8ch; gap: 8px 24px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--line); text-decoration: none; transition: color 200ms ease; }
+  .wl-n, .wl-where { color: var(--dim); font-size: .8rem; }
+  .wl-where { text-align: right; }
+  .wl-title { font-weight: 800; text-transform: uppercase; letter-spacing: -.02em; font-size: clamp(1.3rem, 2.6vw, 2.2rem); line-height: 1; }
+  .wl-result { color: var(--go); }
+  .worklist a:active { color: var(--go); }
+  @media (hover: hover) and (pointer: fine) {
+    .wl-title { transition: transform 300ms var(--ease); }
+    .worklist a:hover { color: var(--go); }
+    .worklist a:hover .wl-title { transform: translateX(10px); }
+  }
+  @media (max-width: 700px) { .worklist a { grid-template-columns: 3ch minmax(0, 1fr); } .wl-result { grid-column: 2; } .wl-where { display: none; } }
   .journey .marquee { margin-top: 0; border-top: 0; }
   .journey .marquee + .marquee { border-top: 1px solid var(--line); }
   @media (max-width: 640px) {

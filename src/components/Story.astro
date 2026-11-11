@@ -1,0 +1,115 @@
+---
+// The career told as one pipeline run. A rail on the left fills with the scroll; each stage's dot
+// and status flip to PASSED as the reader's eye (viewport middle) moves past it.
+import { STORY } from '../content.js';
+const LABEL = { pass: 'Passed', run: 'Running', next: 'Nightly' };
+---
+<section class="sec story" aria-labelledby="story-h" data-story>
+  <p class="kicker mono">The story so far</p>
+  <h2 id="story-h" class="mega mega-sm" data-reveal>
+    <span>I didn't start</span>
+    <span>in software.</span>
+  </h2>
+  <p class="lead" data-reveal>A mechanical engineer who found his way into testing, one stage at a time. Scroll to run the pipeline.</p>
+
+  <ol class="stages">
+    {STORY.map((s) => (
+      <li class={`stage st-${s.status}`} data-stage>
+        <div class="rail" aria-hidden="true"><span class="fill"></span><span class="dot"></span></div>
+        <div class="st-body">
+          <p class="st-tag mono">
+            <span>Stage {s.stage} · {s.when} · {s.where}</span>
+            <span class="st-status">
+              <span class="st-wait">Queued</span><span class="st-done">{LABEL[s.status]}</span>
+            </span>
+          </p>
+          <h3 class="st-title" data-reveal>{s.title}</h3>
+          <p class="st-role mono" data-reveal>{s.role}</p>
+          <p class="st-story" data-reveal>{s.story}</p>
+          <ul class="st-built">{s.built.map((b, i) => <li data-reveal style={`--i:${i % 4}`}>{b}</li>)}</ul>
+          <pre class="st-log mono" data-reveal aria-label="Pipeline log">{s.log.map((l) => <span class:list={[!l.startsWith('$') && 'out']}>{l}</span>)}</pre>
+          <ul class="st-stack mono" aria-label="Tools">{s.stack.map((t) => <li>{t}</li>)}</ul>
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .stages { list-style: none; margin: clamp(48px, 7vw, 96px) 0 0; padding: 0; max-width: 980px; }
+  .stage { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 0 clamp(18px, 3vw, 40px); padding-bottom: clamp(56px, 8vw, 110px); }
+  .stage:last-child { padding-bottom: 0; }
+
+  /* Rail: grey track, green fill scaled by the scroll (transform only), dot at the stage's start. */
+  .rail { position: relative; }
+  .rail::before, .fill { content: ''; position: absolute; left: 13px; top: 14px; bottom: -14px; width: 2px; background: var(--line); }
+  .fill { background: var(--go); transform-origin: top; transform: scaleY(var(--p, 0)); }
+  .stage:last-child .rail::before, .stage:last-child .fill { bottom: 0; }
+  .dot { position: absolute; left: 6px; top: 7px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #3a3a3a; background: var(--bg); transition: background-color 300ms ease, border-color 300ms ease, transform 300ms var(--ease); }
+  .stage.is-run .dot { border-color: var(--go); background: var(--go); transform: scale(1.15); }
+  .st-run .dot { box-shadow: 0 0 0 0 rgb(47 212 122 / .5); }
+  .st-run.is-run .dot { animation: beat 1.6s var(--ease) infinite; }
+  .st-next.is-run .dot { background: var(--bg); }
+  @keyframes beat { 0% { box-shadow: 0 0 0 0 rgb(47 212 122 / .5); } 100% { box-shadow: 0 0 0 12px rgb(47 212 122 / 0); } }
+
+  .st-tag { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin: 6px 0 18px; font-size: .78rem; color: var(--dim); }
+  /* Status: Queued until the reader reaches the stage, then its result. Two stacked labels crossfade. */
+  .st-status { display: inline-grid; color: var(--go); }
+  .st-status > span { grid-area: 1 / 1; transition: opacity 250ms ease, transform 250ms var(--ease); }
+  .st-wait { color: var(--dim); }
+  .st-done { opacity: 0; transform: translateY(6px); }
+  .is-run .st-wait { opacity: 0; transform: translateY(-6px); }
+  .is-run .st-done { opacity: 1; transform: none; }
+  .st-pass .st-done::before { content: '✓ '; }
+  .st-run .st-done::before { content: '● '; }
+
+  .st-title { margin: 0; font-weight: 850; text-transform: uppercase; letter-spacing: -.03em; line-height: .95; font-size: clamp(2rem, 5.2vw, 4.2rem); }
+  .st-role { margin: 12px 0 0; color: var(--go); font-size: .85rem; }
+  .st-story { margin: 22px 0 0; max-width: 58ch; color: var(--soft); line-height: 1.65; font-size: clamp(1rem, 1.3vw, 1.12rem); }
+  .st-built { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 2px; max-width: 64ch; }
+  .st-built li { position: relative; padding: 9px 0 9px 26px; border-top: 1px solid var(--line); color: var(--fg); line-height: 1.45; }
+  .st-built li::before { content: '✓'; position: absolute; left: 2px; top: 9px; color: var(--go); font-size: .9em; }
+  .st-next .st-built li::before { content: '○'; color: var(--dim); }
+  .st-log { margin: 24px 0 0; padding: 16px 18px; max-width: 64ch; overflow-x: auto; border: 1px solid #1c1c1c; border-radius: 14px; background: #0b0b0b; font-size: .78rem; line-height: 1.7; text-transform: none; white-space: pre; }
+  .st-log span { display: block; color: var(--soft); }
+  .st-log .out { color: var(--go); }
+  .st-stack { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; font-size: .7rem; }
+  .st-stack li { padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--soft); }
+
+  /* Log lines type in one after another once the log is revealed. */
+  :global(.js) .st-log span { opacity: 0; transform: translateX(-6px); transition: opacity 300ms ease, transform 300ms var(--ease); }
+  :global(.js) .st-log.is-in span { opacity: 1; transform: none; }
+  :global(.js) .st-log.is-in span:nth-child(2) { transition-delay: 350ms; }
+  :global(.js) .st-log.is-in span:nth-child(3) { transition-delay: 700ms; }
+  :global(.js) .st-log.is-in span:nth-child(4) { transition-delay: 1050ms; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .st-run.is-run .dot { animation: none; }
+    .dot, .st-status > span, :global(.js) .st-log span { transform: none !important; transition-property: opacity, background-color, border-color; transition-delay: 0ms !important; }
+  }
+</style>
+
+<script>
+  // Fill each stage's rail by how far the viewport's middle has travelled through it.
+  // A rAF-throttled scroll read of five rects, active only while the section is on screen.
+  const section = document.querySelector('[data-story]');
+  if (section) {
+    const stages = [...section.querySelectorAll('[data-stage]')];
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const mid = innerHeight * 0.55;
+      for (const st of stages) {
+        const r = st.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (mid - r.top) / r.height));
+        st.style.setProperty('--p', p.toFixed(4));
+        st.classList.toggle('is-run', p > 0);
+      }
+    };
+    const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); update(); }
+      else { removeEventListener('scroll', onScroll); removeEventListener('resize', onScroll); update(); }
+    }).observe(section);
+  }
+</script>
