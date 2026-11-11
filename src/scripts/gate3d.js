@@ -4,7 +4,7 @@ import * as THREE from 'three';
 // every fifth one is a bug, turns red and is pushed off the belt. Renders only while on screen.
 export function createGate(canvas, section) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
   renderer.shadowMap.enabled = true;
 
   const scene = new THREE.Scene();
@@ -161,6 +161,7 @@ export function createGate(canvas, section) {
   let visible = false, last = 0;
   const loop = (now) => {
     if (!visible) return;
+    if (now - last < 12) { requestAnimationFrame(loop); return; } // 60fps cap on 120Hz screens
     const dt = Math.min((now - last) / 1000, 1 / 30);
     last = now;
     step(dt);

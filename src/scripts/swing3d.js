@@ -6,7 +6,7 @@ import { seatedPerson } from './characters.js';
 // The character is modelled in the old SVG's units (240 wide, seat 250 below the bar) and scaled.
 export function createSwing3D(canvas, swingEl) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
   renderer.shadowMap.enabled = true;
 
   const scene = new THREE.Scene();

@@ -89,7 +89,7 @@ const F = {
 
 export function createWorkshop(canvas, stage) {
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2));
   renderer.shadowMap.enabled = true;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 10, 6000);
@@ -229,6 +229,7 @@ export function createWorkshop(canvas, stage) {
   let visible = false, last = 0;
   const loop = (now) => {
     if (!visible) return;
+    if (now - last < 12) { requestAnimationFrame(loop); return; } // 60fps cap on 120Hz screens
     frame(Math.min((now - last) / 1000, 1 / 30));
     last = now;
     requestAnimationFrame(loop);

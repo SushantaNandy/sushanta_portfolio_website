@@ -123,11 +123,14 @@ const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).pa
 <script>
   const clock = document.querySelector('[data-clock]');
   const pad = (n) => String(n).padStart(2, '0');
+  let onScreen = true;
   const tick = () => {
+    if (!onScreen) return;
     const d = new Date();
     clock.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}:${pad(Math.floor(d.getMilliseconds() / 10))}`;
     requestAnimationFrame(tick);
   };
+  new IntersectionObserver(([e]) => { const was = onScreen; onScreen = e.isIntersecting; if (onScreen && !was) tick(); }).observe(clock);
   tick();
   const d = new Date();
   document.querySelector('[data-date]').textContent = `${d.toLocaleString('en', { month: 'short' }).toUpperCase()} ${d.getDate()} ${d.getFullYear()}`;</script>

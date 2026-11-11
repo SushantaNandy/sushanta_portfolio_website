@@ -32,7 +32,7 @@ const labelOf = (p) => (p.numbers[0] ? `${p.numbers[0][0]} ${p.numbers[0][1]}` :
             </dl>
           )}
           <h3 class="p-h mono" data-reveal>What I built</h3>
-          <ul class="p-built">{p.built.map((b, j) => <li data-reveal style={`--i:${j % 4}`}>{b}</li>)}</ul>
+          <ul class="p-built">{p.built.map((b, j) => <li data-reveal style={`--i:${Math.min(j, 4)}`}>{b}</li>)}</ul>
           <ul class="p-stack mono" aria-label="Tools">{p.stack.map((t) => <li>{t}</li>)}</ul>
           {p.href && <a class="btn p-case" href={p.href}>Read the case study <span aria-hidden="true">→</span></a>}
         </article>

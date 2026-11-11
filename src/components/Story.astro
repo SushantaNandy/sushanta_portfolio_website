@@ -26,7 +26,7 @@ const LABEL = { pass: 'Passed', run: 'Running', next: 'Nightly' };
           <h3 class="st-title" data-reveal>{s.title}</h3>
           <p class="st-role mono" data-reveal>{s.role}</p>
           <p class="st-story" data-reveal>{s.story}</p>
-          <ul class="st-built">{s.built.map((b, i) => <li data-reveal style={`--i:${i % 4}`}>{b}</li>)}</ul>
+          <ul class="st-built">{s.built.map((b, i) => <li data-reveal style={`--i:${Math.min(i, 4)}`}>{b}</li>)}</ul>
           <pre class="st-log mono" data-reveal aria-label="Pipeline log">{s.log.map((l) => <span class:list={[!l.startsWith('$') && 'out']}>{l}</span>)}</pre>
           <ul class="st-stack mono" aria-label="Tools">{s.stack.map((t) => <li>{t}</li>)}</ul>
         </div>
@@ -43,14 +43,14 @@ const LABEL = { pass: 'Passed', run: 'Running', next: 'Nightly' };
   /* Rail: grey track, green fill scaled by the scroll (transform only), dot at the stage's start. */
   .rail { position: relative; }
   .rail::before, .fill { content: ''; position: absolute; left: 13px; top: 14px; bottom: -14px; width: 2px; background: var(--line); }
-  .fill { background: var(--go); transform-origin: top; transform: scaleY(var(--p, 0)); }
+  .fill { background: var(--go); transform-origin: top; transform: scaleY(0); }
   .stage:last-child .rail::before, .stage:last-child .fill { bottom: 0; }
   .dot { position: absolute; left: 6px; top: 7px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #3a3a3a; background: var(--bg); transition: background-color 300ms ease, border-color 300ms ease, transform 300ms var(--ease); }
   .stage.is-run .dot { border-color: var(--go); background: var(--go); transform: scale(1.15); }
-  .st-run .dot { box-shadow: 0 0 0 0 rgb(47 212 122 / .5); }
-  .st-run.is-run .dot { animation: beat 1.6s var(--ease) infinite; }
+  .st-run .dot::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; background: rgb(47 212 122 / .5); opacity: 0; }
+  .st-run.is-run .dot::after { animation: beat 1.6s var(--ease) infinite; }
   .st-next.is-run .dot { background: var(--bg); }
-  @keyframes beat { 0% { box-shadow: 0 0 0 0 rgb(47 212 122 / .5); } 100% { box-shadow: 0 0 0 12px rgb(47 212 122 / 0); } }
+  @keyframes beat { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(2.4); } }
 
   .st-tag { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; margin: 6px 0 18px; font-size: .78rem; color: var(--dim); }
   /* Status: Queued until the reader reaches the stage, then its result. Two stacked labels crossfade. */
@@ -70,21 +70,22 @@ const LABEL = { pass: 'Passed', run: 'Running', next: 'Nightly' };
   .st-built li { position: relative; padding: 9px 0 9px 26px; border-top: 1px solid var(--line); color: var(--fg); line-height: 1.45; }
   .st-built li::before { content: '✓'; position: absolute; left: 2px; top: 9px; color: var(--go); font-size: .9em; }
   .st-next .st-built li::before { content: '○'; color: var(--dim); }
-  .st-log { margin: 24px 0 0; padding: 16px 18px; max-width: 64ch; overflow-x: auto; border: 1px solid #1c1c1c; border-radius: 14px; background: #0b0b0b; font-size: .78rem; line-height: 1.7; text-transform: none; white-space: pre; }
+  .st-log { margin: 24px 0 0; padding: 16px 18px; max-width: 64ch; overflow-x: auto; border: 1px solid #1c1c1c; border-radius: 14px; background: #0b0b0b; font-size: .78rem; line-height: 1.7; text-transform: none; white-space: pre; overscroll-behavior-x: contain; /* a sideways swipe in the log never triggers back-navigation */ }
   .st-log span { display: block; color: var(--soft); }
   .st-log .out { color: var(--go); }
   .st-stack { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; font-size: .7rem; }
   .st-stack li { padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--soft); }
 
   /* Log lines type in one after another once the log is revealed. */
+  :global(.js) .st-log[data-reveal] { opacity: 1; transform: none; }
   :global(.js) .st-log span { opacity: 0; transform: translateX(-6px); transition: opacity 300ms ease, transform 300ms var(--ease); }
   :global(.js) .st-log.is-in span { opacity: 1; transform: none; }
-  :global(.js) .st-log.is-in span:nth-child(2) { transition-delay: 350ms; }
-  :global(.js) .st-log.is-in span:nth-child(3) { transition-delay: 700ms; }
-  :global(.js) .st-log.is-in span:nth-child(4) { transition-delay: 1050ms; }
+  :global(.js) .st-log.is-in span:nth-child(2) { transition-delay: 200ms; }
+  :global(.js) .st-log.is-in span:nth-child(3) { transition-delay: 340ms; }
+  :global(.js) .st-log.is-in span:nth-child(4) { transition-delay: 440ms; }
 
   @media (prefers-reduced-motion: reduce) {
-    .st-run.is-run .dot { animation: none; }
+    .st-run.is-run .dot::after { animation: none; }
     .dot, .st-status > span, :global(.js) .st-log span { transform: none !important; transition-property: opacity, background-color, border-color; transition-delay: 0ms !important; }
   }
 </style>
@@ -95,16 +96,17 @@ const LABEL = { pass: 'Passed', run: 'Running', next: 'Nightly' };
   const section = document.querySelector('[data-story]');
   if (section) {
     const stages = [...section.querySelectorAll('[data-stage]')];
+    const fills = stages.map((st) => st.querySelector('.fill'));
     let queued = false;
     const update = () => {
       queued = false;
       const mid = innerHeight * 0.55;
-      for (const st of stages) {
-        const r = st.getBoundingClientRect();
-        const p = Math.min(1, Math.max(0, (mid - r.top) / r.height));
-        st.style.setProperty('--p', p.toFixed(4));
-        st.classList.toggle('is-run', p > 0);
-      }
+      const rects = stages.map((st) => st.getBoundingClientRect()); // all reads, then all writes
+      stages.forEach((st, i) => {
+        const p = Math.min(1, Math.max(0, (mid - rects[i].top) / rects[i].height));
+        fills[i].style.transform = `scaleY(${p.toFixed(4)})`;
+        if (st.classList.contains('is-run') !== p > 0) st.classList.toggle('is-run', p > 0);
+      });
     };
     const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
     new IntersectionObserver(([e]) => {

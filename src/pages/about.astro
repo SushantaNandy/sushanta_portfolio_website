@@ -22,10 +22,10 @@ import { LINKEDIN } from '../data.js';
     <p class="kicker mono">In their words</p>
     <h2 id="recs-h" class="mega mega-sm" data-reveal><span>What my teams</span><span>say about me</span></h2>
     <div class="recs">
-      {RECS.map((r, i) => {
+      {RECS.map((r) => {
         const words = r.quote.split(' ');
         return (
-          <figure class="rec" data-reveal style={`--i:${i}`}>
+          <figure class="rec">
             <blockquote>
               <p><span class="q-mark" aria-hidden="true">“</span>{words.map((w, k) => <span class="qw" style={`--k:${(k / words.length).toFixed(3)}`}>{w} </span>)}</p>
             </blockquote>
@@ -123,7 +123,7 @@ import { LINKEDIN } from '../data.js';
   .seal { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid var(--go); color: var(--go); font-size: .85rem; margin-bottom: 6px; }
   .c-name { font-weight: 700; line-height: 1.25; }
   .c-by { color: var(--dim); font-size: .72rem; }
-  :global(.js) .cred { opacity: 0; transform: scale(1.06) rotate(-2deg); transition: opacity 350ms var(--ease), transform 450ms var(--ease); transition-delay: calc(var(--d) * 50ms); }
+  :global(.js) .cred { opacity: 0; transform: scale(1.06) rotate(-2deg); transition: opacity 350ms var(--ease), transform 450ms var(--ease); transition-delay: calc(var(--d) * (60ms - var(--d) * 2.5ms)); }
   :global(.js) .creds.is-in .cred { opacity: 1; transform: none; }
 
   @media (max-width: 760px) { .intro { grid-template-columns: 1fr; } }

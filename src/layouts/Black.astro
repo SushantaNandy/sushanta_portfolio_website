@@ -28,6 +28,7 @@ const nav = [
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
+    <div class="top-edge" aria-hidden="true"></div>
     <header class="top">
       <a class="mark" href="/" aria-label="Sushanta Nandy, home">S<span aria-hidden="true">—</span>N</a>
       <nav aria-label="Main">
@@ -122,23 +123,24 @@ const nav = [
         const scrim = sheet.querySelector('.sheet-scrim');
         const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
         const SHEET = 'cubic-bezier(0.32, 0.72, 0, 1)', OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
-        let drag = null, dragged = false, closing = 0;
+        let drag = null, dragged = false, closing = 0, sheetH = 0;
         const place = (y, ms = 0, ease = SHEET) => {
           const t = ms && !still ? `${ms}ms ${ease}` : '0ms';
           panel.style.transition = `transform ${t}`;
           scrim.style.transition = `opacity ${t}`;
           panel.style.transform = `translate3d(0, ${y}px, 0)`;
-          scrim.style.opacity = String(Math.max(0, 1 - y / panel.offsetHeight)); // overlay follows the panel
+          scrim.style.opacity = String(Math.max(0, 1 - y / (sheetH || 1))); // overlay follows the panel
         };
         const open = () => {
           clearTimeout(closing);
           if (!sheet.open) sheet.showModal();
-          place(panel.offsetHeight);
+          sheetH = panel.offsetHeight; // measured once per open, not per frame
+          place(sheetH);
           panel.getBoundingClientRect(); // commit the start position before animating in
           place(0, 500);
         };
         const close = (ms = 300, ease = SHEET) => {
-          place(panel.offsetHeight, ms, ease);
+          place(sheetH, ms, ease);
           clearTimeout(closing);
           closing = setTimeout(() => sheet.close(), still ? 0 : ms);
         };
@@ -177,7 +179,10 @@ const nav = [
           setTimeout(() => (dragged = false), 0);
           const a = hist.find((p) => e.timeStamp - p.t < 80) ?? hist[0], b = hist[hist.length - 1];
           const v = b.t > a.t ? (b.y - a.y) / (b.t - a.t) : 0; // px per ms, positive is downward
-          if (y > h * 0.4 || v > 0.5) close(Math.min(400, Math.max(150, (h - y) / Math.max(v, 1))), OUT); // leaves at the flick's speed
+          // Project where the flick would come to rest (scroll-style deceleration, rate .998) and decide from
+          // that, so a fast short flick closes and an upward flick from low down snaps back open.
+          const rest = y + (v * 0.998) / (1 - 0.998);
+          if (rest > h * 0.5) close(Math.min(400, Math.max(150, (h - y) / Math.max(v, 1))), OUT); // leaves at the flick's speed
           else place(0, 200, OUT); // didn't make it: snap back quickly
         };
         panel.addEventListener('pointerup', release);
@@ -186,12 +191,6 @@ const nav = [
       }
 
       // Reveal once on scroll; content is visible without JS.
-      // Stagger siblings that reveal together (strength columns, list rows, cards).
-      // Only for items that enter together (a grid row, a run of list rows). Panels that scroll
-      // in one at a time get no delay; they only need their stacking offset.
-      document.querySelectorAll('.honours, .cards-grid').forEach((g) =>
-        [...g.children].forEach((c, i) => { const t = c.matches('[data-reveal]') ? c : c.querySelector('[data-reveal]'); if (t) t.style.setProperty('--i', String(i % 4)); }));
-      document.querySelectorAll('.role').forEach((r, i) => r.style.setProperty('--stack', String(i)));
       const io = new IntersectionObserver((entries) => {
         for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
       }, { rootMargin: '0px 0px -10% 0px' });

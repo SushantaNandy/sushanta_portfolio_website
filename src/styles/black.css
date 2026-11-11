@@ -182,7 +182,7 @@ img, svg { display: block; max-width: 100%; }
 }
 
 /* Reveal */
-.js [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); transition-delay: calc(var(--i, 0) * 70ms); }
+.js [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); transition-delay: calc(var(--i, 0) * (90ms - var(--i, 0) * 10ms)); }
 .js [data-reveal].is-in { opacity: 1; transform: none; }
 
 /* Headlines arrive line by line from behind a mask. */
@@ -228,9 +228,9 @@ img, svg { display: block; max-width: 100%; }
   }
 }
 @keyframes smoke {
-  from { opacity: 0; filter: blur(12px); transform: translate3d(0, .35em, 0) scale(1.1) skewX(-6deg); text-shadow: 0 0 .5em rgb(244 244 242 / .6); }
-  55% { opacity: .85; filter: blur(3px); text-shadow: 0 0 .25em rgb(244 244 242 / .35); }
-  to { opacity: 1; filter: blur(0); transform: none; text-shadow: none; }
+  from { opacity: 0; filter: blur(12px); transform: translate3d(0, .35em, 0) scale(1.1) skewX(-6deg); }
+  55% { opacity: .85; filter: blur(3px); }
+  to { opacity: 1; filter: blur(0); transform: none; }
 }
 
 /* Release gate: 3D conveyor above the footer. */
@@ -261,3 +261,17 @@ html:has(.sheet[open]) { overflow: hidden; } /* the page behind stays put while 
 .sheet-extra a { display: inline-block; padding: 10px 0; text-decoration: none; }
 .sheet-close { margin-top: 14px; width: 100%; min-height: 48px; border: 1.5px solid var(--line); border-radius: 999px; background: none; color: var(--fg); font: 600 1rem var(--sans); cursor: pointer; transition: transform 160ms var(--ease); }
 .sheet-close:active { transform: scale(.97); }
+
+/* Scroll edge: once the page scrolls, content passing under the header softens into a blur that
+   fades out downward, instead of a hard bar or a 1px divider. Driven by the scroll itself. */
+.top-edge { position: fixed; inset: 0 0 auto; z-index: 9; height: calc(84px + env(safe-area-inset-top, 0px)); pointer-events: none;
+  background: linear-gradient(rgb(0 0 0 / .7), rgb(0 0 0 / 0)); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(#000 45%, transparent); mask-image: linear-gradient(#000 45%, transparent); }
+@supports (animation-timeline: scroll()) {
+  .top-edge { animation: edge-in linear both; animation-timeline: scroll(root); animation-range: 0 140px; }
+  @keyframes edge-in { from { opacity: 0; } }
+}
+@media (prefers-reduced-transparency: reduce) { .top-edge { -webkit-backdrop-filter: none; backdrop-filter: none; background: linear-gradient(#000 55%, rgb(0 0 0 / 0)); } }
+
+/* Instant press feedback on nav links too (touch-down, not release). */
+.top a:not(.mark):active, .mark:active { opacity: .6; }

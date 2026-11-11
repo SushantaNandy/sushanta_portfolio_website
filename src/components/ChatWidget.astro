@@ -8,7 +8,7 @@ const suggestions = [
 ];
 ---
 <div class="chat" data-chat>
-  <section class="chat-panel" id="chat-panel" role="dialog" aria-modal="false" aria-labelledby="chat-title" hidden>
+  <section class="chat-panel" id="chat-panel" role="dialog" aria-modal="false" aria-labelledby="chat-title">
     <header class="chat-head">
       <div>
         <h2 id="chat-title" class="chat-title">Ask about Sushanta</h2>
@@ -39,14 +39,20 @@ const suggestions = [
 </div>
 
 <style>
-  .chat { position: fixed; z-index: 30; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; justify-items: end; gap: 12px; font-family: var(--sans); }
+  .chat { position: fixed; z-index: 30; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); display: grid; justify-items: end; gap: 12px; font-family: var(--sans); pointer-events: none; } /* the closed panel's box must not block the page */
+  .chat-open { pointer-events: auto; }
   .chat-open { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 12px 20px; border: 1.5px solid var(--fg); border-radius: 999px; background: var(--fg); color: #000; font: 650 .95rem/1 var(--sans); cursor: pointer; box-shadow: 0 10px 30px -10px rgb(0 0 0 / .8); transition: transform 160ms var(--ease), background-color 200ms ease, color 200ms ease; }
   .chat-open:active { transform: scale(.97); }
   .chat-open[aria-expanded='true'] { background: #000; color: var(--fg); }
   .chat-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--go); box-shadow: 0 0 0 3px rgb(47 212 122 / .25); }
 
   .chat-panel { width: min(380px, calc(100vw - 32px)); max-height: min(560px, calc(100dvh - 110px)); /* dvh: shrinks with the on-screen keyboard */ display: flex; flex-direction: column; background: #0b0b0b; color: var(--fg); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 24px 60px -16px rgb(0 0 0 / .9); overflow: hidden; transform-origin: bottom right; }
-  .chat-panel[hidden] { display: none; }
+  /* Closed = invisible and inert, but still laid out, so open/close are transitions that grow out of and
+     shrink back into the button, and can be reversed mid-flight instead of restarting. */
+  .chat-panel { opacity: 0; transform: translateY(10px) scale(.96); visibility: hidden; pointer-events: none;
+    transition: opacity 180ms ease, transform 260ms var(--ease), visibility 0s linear 260ms; }
+  .chat-panel.is-open { opacity: 1; transform: none; visibility: visible; pointer-events: auto;
+    transition: opacity 180ms ease, transform 320ms var(--ease), visibility 0s; }
   .chat-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; padding: 16px 16px 12px 18px; border-bottom: 1px solid var(--line); }
   .chat-title { margin: 0; font-size: 1.05rem; font-weight: 700; }
   .chat-sub { margin: 4px 0 0; font-size: .82rem; color: var(--dim); }
@@ -73,11 +79,10 @@ const suggestions = [
     .chip-q:hover { border-color: var(--soft); color: var(--fg); }
     .chat-x:hover { background: #1a1a1a; color: var(--fg); }
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .chat-panel:not([hidden]) { animation: chat-in 220ms var(--ease) both; }
-    @keyframes chat-in { from { opacity: 0; transform: translateY(8px) scale(.97); } }
+  @media (prefers-reduced-motion: reduce) {
+    .chat-log :global(.msg-bot.is-typing)::after { animation: none; }
+    .chat-panel, .chat-panel.is-open { transform: none; } /* fade only */
   }
-  @media (prefers-reduced-motion: reduce) { .chat-log :global(.msg-bot.is-typing)::after { animation: none; } }
 </style>
 
 <script>
@@ -92,13 +97,14 @@ const suggestions = [
   const history = [];
   let busy = false;
 
+  const isOpen = () => panel.classList.contains('is-open');
   const setOpen = (open) => {
-    panel.hidden = !open;
+    panel.classList.toggle('is-open', open);
     openBtn.setAttribute('aria-expanded', String(open));
     if (open) input.focus();
     else openBtn.focus();
   };
-  openBtn.addEventListener('click', () => setOpen(panel.hidden));
+  openBtn.addEventListener('click', () => setOpen(!isOpen()));
   root.querySelector('[data-chat-close]').addEventListener('click', () => setOpen(false));
   panel.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
 
