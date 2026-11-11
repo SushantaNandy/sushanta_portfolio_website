@@ -12,15 +12,15 @@ Astro, with Three.js for the 3D world.
 
 ## Users
 
-Recruiters and hiring managers evaluating Sushanta Nandy for a full-time SDET / QA automation lead role, especially at wealth and asset management firms. They skim quickly, often between other candidates, and need to judge skill and fit in minutes.
+Recruiters and hiring managers evaluating Sushanta Nandy for a full-time SDET / QA automation role, especially at wealth and asset management firms. They skim quickly, often between other candidates, and need to judge skill and fit in minutes.
 
 ## Product Purpose
 
-A personal portfolio site that gets Sushanta Nandy hired as a Lead SDET / QA automation lead. Success: a recruiter understands what Sushanta automates, sees measured results, and makes contact or downloads the résumé.
+A personal portfolio site that gets Sushanta Nandy hired as an SDET / QA automation engineer. Success: a recruiter understands what Sushanta automates, sees measured results, and makes contact or downloads the résumé.
 
 ## Positioning
 
-ISTQB-certified Lead SDET (5+ years) specialising in wealth and asset management platforms: trading, portfolios, fees and charges, onboarding, HNI models. Migrates legacy suites to Playwright and builds AI-assisted test tooling. The site itself is framed as a CI/CD pipeline run that ends waiting for the recruiter's approval.
+ISTQB-certified SDET (5+ years) specialising in wealth and asset management platforms: trading, portfolios, fees and charges, onboarding, HNI models. Migrates legacy suites to Playwright and builds AI-assisted test tooling. The site itself is framed as a CI/CD pipeline run that ends waiting for the recruiter's approval.
 
 ## Capabilities and Constraints
 

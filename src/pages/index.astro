@@ -8,11 +8,11 @@ import { ROLES_LONG, TOOLS } from '../content.js';
 
 const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).padStart(3, '0')}`);
 ---
-<Black description="Sushanta Nandy, ISTQB-certified Lead SDET in Gurugram. Test automation for wealth and asset management platforms: Playwright, Java, Appium. 40% faster release cycles at FNZ.">
+<Black description="Sushanta Nandy, ISTQB-certified SDET in Gurugram. Test automation for wealth and asset management platforms: Playwright, Java, Appium. 40% faster release cycles at FNZ.">
   <section class="hero" aria-label="Intro">
     <!-- Entrance lives on inner spans: the outer elements own the scroll-out animation. -->
     <p class="hero-clock mono" aria-hidden="true"><span class="in in-deco" data-clock>00:00:00:00</span></p>
-    <p class="hero-who mono"><span class="in in-support">Sushanta Nandy · Lead SDET · Gurugram</span></p>
+    <p class="hero-who mono"><span class="in in-support">Sushanta Nandy · SDET · Gurugram</span></p>
     <h1 class="hero-mark"><span class="sr">Sushanta Nandy</span><span class="in in-lead" aria-hidden="true">S<span class="dash"><Swing /></span>N</span></h1>
     <p class="hero-date mono" aria-hidden="true"><span class="in in-deco" data-date></span></p>
     <p class="hero-scroll mono"><span class="in in-deco in-late">(Scroll)</span></p>
@@ -25,7 +25,7 @@ const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).pa
       <span>other people's money,</span>
       <span class="indent">end to end</span>
     </h2>
-    <p class="lead" data-reveal>ISTQB-certified Lead SDET with 5+ years in wealth and asset management. I migrate legacy suites to Playwright, build AI-assisted test tooling, and run delivery for the pods I lead. Based in Gurugram, India.</p>
+    <p class="lead" data-reveal>ISTQB-certified SDET with 5+ years in wealth and asset management. I migrate legacy suites to Playwright, build AI-assisted test tooling, and help run delivery for my pod. Based in Gurugram, India.</p>
   </section>
 
   <section class="sec" aria-labelledby="work-h">
@@ -90,7 +90,7 @@ const tests = Array.from({ length: 18 }, (_, i) => `TC-${String((i + 1) * 13).pa
   /* The dash is a drawn bar so the swing can hang from it without inheriting a stretched glyph. */
   .dash { position: relative; display: inline-block; width: 1.25em; height: .14em; margin-inline: .12em; background: currentColor; vertical-align: .3em; }
   .hero-who { position: absolute; left: 0; right: 0; top: calc(50% - clamp(4.6rem, 11vw, 9.5rem)); margin: 0; text-align: center; font-size: clamp(.75rem, 1.1vw, .95rem); color: var(--soft); }
-  .hero-scroll { position: absolute; left: 50%; bottom: 3%; transform: translateX(-50%); margin: 0; font-size: .75rem; color: var(--dim); }
+  .hero-scroll { position: absolute; z-index: 2; left: 50%; bottom: 3%; transform: translateX(-50%); margin: 0; font-size: .75rem; color: var(--dim); }
   .statement { padding-top: clamp(40px, 6vw, 80px); }
 
   /* Hero entrance, once per visit. Lead: the S—N mark (carrying the swing) rises.

@@ -7,7 +7,7 @@ import { PAGES, RESUME, LINKEDIN, GITHUB, EMAIL } from '../data.js';
 
 const { title, description, page, talk = false } = Astro.props;
 const current = PAGES.findIndex((p) => p.key === page);
-const fullTitle = page === 'home' ? 'Sushanta Nandy, Lead SDET' : `${title} · Sushanta Nandy`;
+const fullTitle = page === 'home' ? 'Sushanta Nandy, SDET' : `${title} · Sushanta Nandy`;
 const navLinks = PAGES.filter((p) => ['work', 'about', 'contact'].includes(p.key));
 const isCurrent = (key) => key === page || (key === 'work' && page === 'case');
 ---
@@ -32,7 +32,6 @@ const isCurrent = (key) => key === page || (key === 'work' && page === 'case');
             {navLinks.map((p) => (
               <li><a href={p.href} aria-current={isCurrent(p.key) ? 'page' : undefined}>{p.label}</a></li>
             ))}
-            <li><a href="/drive/">3D</a></li>
             <li><a class="btn btn-go btn-sm" href={RESUME} download>Resume</a></li>
           </ul>
         </nav>

@@ -48,12 +48,17 @@ const tokens = ['</>', '✓', '{ }', '200', 'PASS', '✓'];
       <text class="token" x={i % 2 ? 160 : 52} y={212 - (i % 3) * 8} text-anchor={i % 2 ? 'start' : 'end'} style={`--i:${i}`} font-family="monospace" font-size="12" fill="#2fd47a">{t}</text>
     ))}
   </svg>
+  <canvas class="swing-3d"></canvas>
 </span>
 
 <style>
   .swing { --w: clamp(150px, 17vw, 250px); position: absolute; top: 100%; left: calc(50% - var(--w) / 2); width: var(--w); transform-origin: 50% 0; will-change: transform; cursor: grab; touch-action: none; /* the swing owns the drag; the page scrolls everywhere else */ }
   .swing.is-held { cursor: grabbing; }
   .swing svg { width: 100%; height: auto; overflow: visible; }
+  /* The drawing is the fallback; once the lit 3D scene is up it takes over and the span stays as the grab target. */
+  .swing-3d { position: absolute; display: none; pointer-events: none; }
+  .swing.is-3d .swing-3d { display: block; }
+  .swing.is-3d svg { visibility: hidden; }
   .legs { transform-box: fill-box; transform-origin: 50% 0; }
   .eyes { transform-box: fill-box; transform-origin: center; animation: blink 5s infinite; }
   @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
@@ -73,26 +78,44 @@ const tokens = ['</>', '✓', '{ }', '200', 'PASS', '✓'];
 </style>
 
 <script>
-  // Pendulum: θ'' = -(g/L)·sin θ - c·θ'. Cursor movement adds angular velocity; the swing
-  // keeps its momentum and settles on its own, so pushes can interrupt it at any point.
+  // Pendulum swinging front-to-back (toward and away from the viewer), drawn as rotateX with
+  // perspective: θ'' = -(g/L)·sin θ - c·θ'. θ > 0 = seat toward the viewer. Cursor wiggles and
+  // taps add impulses; a pendulum only builds amplitude when pushed near its own rhythm, so
+  // matching the swing's frequency makes it swing higher and off-beat pushes cancel out.
   const swing = document.querySelector('[data-swing]');
   const legs = swing?.querySelector('.legs');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let three = null; // the 3D scene once loaded; until then (or without WebGL) the drawing swings
+
+  if (swing) {
+    import('../scripts/swing3d.js')
+      .then(({ createSwing3D }) => {
+        three = createSwing3D(swing.querySelector('.swing-3d'), swing);
+        swing.classList.add('is-3d');
+        swing.style.transform = '';
+        three.pose(reduce ? 0 : theta, MAX);
+      })
+      .catch(() => {}); // no WebGL: keep the drawing
+  }
+
+  const MAX = 0.75; // radians; how far it may swing toward or away from the viewer
+  let theta = 0.22;
 
   if (swing && !reduce) {
     const G = 9;      // g/L: ~2s period, slow enough to read as a real swing
     const C = 0.75;   // damping: settles in a few swings, not forever
-    const MAX = 1.1;  // radians; stops it looping over the bar
-    let theta = 0.22, omega = 0, lastX = null, last = 0, running = false, visible = true;
-    let drag = null; // { id, a0, t0, hist: [{theta, t}], moved }
+    let omega = 0, lastX = null, lastY = null, last = 0, running = false, visible = true;
+    let drag = null; // { id, y0, t0, hist: [{theta, t}], moved }
 
     // Past the limit the swing resists progressively instead of stopping dead.
     const rubberband = (x, d = 0.6, k = 0.55) => (x * d * k) / (d + k * Math.abs(x));
     const soft = (t) => (Math.abs(t) <= MAX ? t : Math.sign(t) * (MAX + rubberband(Math.abs(t) - MAX)));
 
     const render = () => {
-      swing.style.transform = `rotate(${theta}rad)`;
-      legs.style.transform = `rotate(${(-omega * 0.14).toFixed(4)}rad)`; // legs trail the motion
+      if (three) return three.pose(theta, MAX);
+      swing.style.transform = `perspective(900px) rotateX(${theta.toFixed(4)}rad)`; // +rotateX brings the seat toward the viewer
+      // Pumping: legs stretch out on the way forward, tuck under on the way back.
+      legs.style.transform = `scaleY(${(1 - 0.3 * Math.max(0, -theta) / MAX).toFixed(3)})`;
     };
     const step = (now) => {
       const dt = Math.min((now - last) / 1000, 1 / 30);
@@ -109,23 +132,21 @@ const tokens = ['</>', '✓', '{ }', '200', 'PASS', '✓'];
 
     addEventListener('pointermove', (e) => {
       if (lastX !== null && !drag) {
-        // Rotating clockwise moves the seat left, so a rightward push is a negative impulse.
-        omega = Math.max(-4, Math.min(4, omega - (e.clientX - lastX) * 0.004));
+        // Moving down or right pulls the seat toward you; up or left pushes it away.
+        const d = (e.clientY - lastY) + (e.clientX - lastX);
+        omega = Math.max(-4, Math.min(4, omega + d * 0.004));
         wake();
       }
-      lastX = e.clientX;
+      lastX = e.clientX; lastY = e.clientY;
     }, { passive: true });
-    // Grab and swing it directly. The swing follows the pointer 1:1 around its anchor, keeping
-    // the angle where it was grabbed, can be caught mid-swing, and on release keeps the hand's
-    // angular velocity. A tap with no drag still gives it a push.
-    const anchor = swing.parentElement; // the S—N dash it hangs from
-    const angleAt = (e) => {
-      const r = anchor.getBoundingClientRect();
-      return Math.atan2(e.clientX - (r.left + r.width / 2), e.clientY - r.bottom);
-    };
+    // Grab and swing it directly: dragging down pulls the seat toward you, up pushes it away,
+    // 1:1 from where it was grabbed. It can be caught mid-swing, and on release keeps the hand's
+    // velocity. A tap with no drag is a push in the direction it's already moving, so tapping
+    // in rhythm pumps it higher, like pushing a real swing.
+    const SWING_PX = 220; // drag distance that equals one radian
     swing.addEventListener('pointerdown', (e) => {
       swing.setPointerCapture(e.pointerId);
-      drag = { id: e.pointerId, a0: angleAt(e), t0: theta, x0: e.clientX, y0: e.clientY, hist: [{ theta, t: e.timeStamp }], moved: false };
+      drag = { id: e.pointerId, t0: theta, x0: e.clientX, y0: e.clientY, hist: [{ theta, t: e.timeStamp }], moved: false };
       omega = 0;
       swing.classList.add('is-held');
     });
@@ -133,8 +154,7 @@ const tokens = ['</>', '✓', '{ }', '200', 'PASS', '✓'];
       if (!drag || e.pointerId !== drag.id) return;
       if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 6) return; // small hysteresis before it counts as a drag
       drag.moved = true;
-      // Clockwise rotation moves the seat left, so the angle runs opposite to the pointer's sweep.
-      theta = soft(drag.t0 - (angleAt(e) - drag.a0));
+      theta = soft(drag.t0 + (e.clientY - drag.y0) / SWING_PX);
       drag.hist.push({ theta, t: e.timeStamp });
       if (drag.hist.length > 6) drag.hist.shift();
       render();
@@ -147,7 +167,7 @@ const tokens = ['</>', '✓', '{ }', '200', 'PASS', '✓'];
         omega = b.t > a.t ? Math.max(-6, Math.min(6, ((b.theta - a.theta) / (b.t - a.t)) * 1000)) : 0;
         theta = Math.max(-MAX, Math.min(MAX, theta));
       } else {
-        omega -= Math.sign(e.offsetX - swing.clientWidth / 2 || 1) * 1.6; // tap = push
+        omega += Math.sign(omega || 1) * 1.2; // tap = push along the current motion
       }
       drag = null;
       swing.classList.remove('is-held');

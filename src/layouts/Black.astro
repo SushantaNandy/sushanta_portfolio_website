@@ -3,9 +3,10 @@ import '@fontsource-variable/schibsted-grotesk';
 import '@fontsource-variable/jetbrains-mono';
 import '../styles/black.css';
 import { RESUME, EMAIL, LINKEDIN, GITHUB } from '../data.js';
+import ChatWidget from '../components/ChatWidget.astro';
 
 const { title, description, page } = Astro.props;
-const fullTitle = title ? `${title} · Sushanta Nandy` : 'Sushanta Nandy · Lead SDET';
+const fullTitle = title ? `${title} · Sushanta Nandy` : 'Sushanta Nandy · SDET';
 const nav = [
   { key: 'work', label: 'Work', href: '/work/' },
   { key: 'about', label: 'About', href: '/about/' },
@@ -41,6 +42,16 @@ const nav = [
 
     <main id="main"><slot /></main>
 
+    {page !== 'contact' && (
+      <section class="gate" aria-labelledby="gate-h" data-gate>
+        <div class="gate-copy">
+          <p class="kicker mono">The release gate</p>
+          <h2 id="gate-h" class="gate-h">Every build goes through the gate. The broken ones never reach your users.</h2>
+        </div>
+        <canvas class="gate-canvas" aria-hidden="true"></canvas>
+      </section>
+    )}
+
     <footer class="foot">
       <div class="foot-grid">
         <div class="foot-info">
@@ -51,7 +62,6 @@ const nav = [
           <li><a href="/work/">Work</a></li>
           <li><a href="/about/">About</a></li>
           <li><a href="/contact/">Contact</a></li>
-          <li><a href="/drive/">Drive in 3D</a></li>
         </ul>
         <ul class="foot-tags mono">
           <li><a href={LINKEDIN} rel="me">#LinkedIn</a></li>
@@ -62,7 +72,7 @@ const nav = [
       {page !== 'contact' && (
         <>
           <h2 class="mega mega-sm"><span>Your next release</span><span>deserves a gate</span></h2>
-          <p class="lead">Hiring a Lead SDET for a wealth or fintech platform? Email me, or grab the résumé.</p>
+          <p class="lead">Hiring an SDET for a wealth or fintech platform? Email me, or grab the résumé.</p>
           <a class="cta" href={`mailto:${EMAIL}`} data-cta>
             <span class="sr">Get in touch by email</span>
             <svg class="cta-line" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true">
@@ -80,6 +90,8 @@ const nav = [
       <p class="copy mono">© {new Date().getFullYear()} Sushanta Nandy</p>
     </footer>
 
+    <ChatWidget />
+
     <script>
       // Reveal once on scroll; content is visible without JS.
       // Stagger siblings that reveal together (strength columns, list rows, cards).
@@ -92,6 +104,27 @@ const nav = [
         for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
       }, { rootMargin: '0px 0px -10% 0px' });
       document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+
+      // Smoke headlines: wrap each word so it can condense out of a blur as it scrolls in (CSS does the motion).
+      document.querySelectorAll('.mega > span').forEach((line) => {
+        if (line.children.length) return;
+        const words = line.textContent.trim().split(/\s+/);
+        line.replaceChildren(...words.flatMap((w, i) => {
+          const s = document.createElement('span');
+          s.className = 'smoke-w';
+          s.textContent = w;
+          s.style.setProperty('--w', String(i));
+          return i ? [' ', s] : [s];
+        }));
+      });
+
+      // Release gate: load the 3D scene only when it is about to scroll into view.
+      const gate = document.querySelector('[data-gate]');
+      if (gate) new IntersectionObserver(([e], o) => {
+        if (!e.isIntersecting) return;
+        o.disconnect();
+        import('../scripts/gate3d.js').then(({ createGate }) => createGate(gate.querySelector('canvas'), gate)).catch(() => {});
+      }, { rootMargin: '300px 0px' }).observe(gate);
 
       // Footer CTA: draw the line, then pop the letters, once it is mostly on screen.
       // Also drives any self-drawing outline ([data-draw]).
